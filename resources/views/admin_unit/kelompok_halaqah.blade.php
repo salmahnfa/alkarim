@@ -59,9 +59,25 @@
 							<div class="card">
 								<div class="card-header">
 									<h4 class="card-title">Daftar Nama</h4>
-									<div class="card-category">Pengampu: </a></div>
+									<!--<div class="card-category">Pengampu: </a></div>-->
 								</div>
 								<div class="card-body">
+									<table class="table table-bordered">
+										<tbody>
+											<tr>
+												<td style="width: 20%; vertical-align: middle;">Guru Pengampu</td>
+												<td id="guru-quran-nama"> </td>
+											</tr>
+											<tr>
+												<td style="width: 20%; vertical-align: middle;">Kelas</td>
+												<td id="kelas-info"> </td>
+											</tr>
+											<tr>
+												<td style="width: 20%; vertical-align: middle;">Grade</td>
+												<td id="grade-info"> </td>
+											</tr>
+										</tbody>
+									</table>
 									<div class="table-responsive">
 										<table id="kelompok-halaqah-datatables" class="display table table-striped table-hover" >
 											<thead>
@@ -134,25 +150,34 @@
 				tbody.append(noDataRow);
 			}
 
+			var kelompokHalaqahs = {!! json_encode($kelompokHalaqahs) !!};
+			var selectedKelompokHalaqah = kelompokHalaqahs.filter(function(kelompokHalaqah) {
+				return kelompokHalaqah.id == kelompokHalaqahId;
+			})[0];
+
+			var guruQuranId = selectedKelompokHalaqah.guru_quran_id;
+			var guruQurans = {!! json_encode($guruQurans) !!}.filter(function(guruQuran) {
+				return guruQuran.id == guruQuranId;
+			})[0];
+
+			var userId = guruQurans.user_id;
+			var users = {!! json_encode($users) !!}.filter(function(user) {
+				return user.id == userId;
+			})[0].nama;
+
+			var kelompokHalaqahNama = $('#kelompok-halaqah-column .card-title');
+			kelompokHalaqahNama.text('Kelompok ' + selectedKelompokHalaqah.kelas.nama + ' - ' + selectedKelompokHalaqah.grade);
+
+			var guruQuranNama = $('#guru-quran-nama');
+			guruQuranNama.text(users);
+
+			var kelasInfo = $('#kelas-info');
+			kelasInfo.text(selectedKelompokHalaqah.kelas.nama);
+
+			var gradeInfo = $('#grade-info');
+			gradeInfo.text(selectedKelompokHalaqah.grade);
+
 			$('#kelompok-halaqah-column').show();
-
-			var selectedKelompokHalaqah = $('#dropdown-kelompok-halaqah option:selected').val();
-			var selectedKelompokHalaqahObject = {!! json_encode($kelompokHalaqahs) !!}.find(function(kelompokHalaqah) {
-				return kelompokHalaqah.id == selectedKelompokHalaqah;
-			});
-			var selectedGuruQuranId = selectedKelompokHalaqahObject.guru_quran_id;
-			var selectedGuruQuranObject = {!! json_encode($guruQurans) !!}.find(function(guruQuran) {
-				return guruQuran.id == selectedGuruQuranId;
-			});
-			var selectedGuruQuranUserId = selectedGuruQuranObject.user_id;
-			var selectedGuruQuranNama = {!! json_encode($users) !!}.find(function(user) {
-				return user.id == selectedGuruQuranUserId;
-			}).nama;
-
-			var cardTitle = $('#kelompok-halaqah-column .card-title');
-			cardTitle.text('Kelompok ' + selectedKelompokHalaqah);
-			var cardCategory = $('#kelompok-halaqah-column .card-category');
-			cardCategory.text('Pengampu ' + selectedGuruQuranNama);
 		});
 	});
 </script>

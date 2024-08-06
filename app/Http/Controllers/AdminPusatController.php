@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Ujian;
 use App\Models\GuruQuran;
+use App\Models\KelompokHalaqah;
 use App\Models\Nilai;
+use App\Models\Siswa;
+use Illuminate\Support\Facades\Date;
 
 class AdminPusatController extends Controller
 {
@@ -72,14 +75,24 @@ class AdminPusatController extends Controller
         return view('admin_pusat.users.guru_quran', $data);
     }
 
-    public function kelompok_halaqah()
+    public function kelompok_halaqah(?string $tahun_ajaran_start = null, ?string $tahun_ajaran_end = null)
     {
-        $guru_qurans = GuruQuran::with('siswa')->get();
+        if (!$tahun_ajaran_start) {
+            $yearNow = Date::now()->year;
+            $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
+        } else {
+            $tahun_ajaran = "$tahun_ajaran_start/$tahun_ajaran_end";
+        }
+
+        $guru_qurans = GuruQuran::with(['kelompokHalaqahs.siswas' => function ($query) use ($tahun_ajaran) {
+            $query->wherePivot('tahun_ajaran', $tahun_ajaran);
+        }])->with('kelompokHalaqahs.kelas')->get();
 
         $data = [
             'guru_qurans' => $guru_qurans,
             'title' => 'Kelompok Halaqah',
-            'page_title' => 'Kelompok Halaqah'
+            'page_title' => 'Kelompok Halaqah',
+            'tahun_ajaran' => $tahun_ajaran
         ];
 
         return view('admin_pusat.kelompok_halaqah', $data);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Siswa extends Model
 {
@@ -12,23 +13,19 @@ class Siswa extends Model
     protected $fillable = [
         'nisn',
         'nama',
-        'unit_id',
-        'kelas_id',
-        'grade',
-        'kelompok_halaqah_id',
         'surah_id',
         'jilid_id',
     ];
 
-    public function unit()
-    {
-        return $this->belongsTo(Unit::class);
-    }
-    
     public function kelas()
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->belongsToMany(Kelas::class, 'siswa_kelas');
     }
+
+    public function latestKelas(): HasOne
+{
+    return $this->hasOne(Kelas::class)->latestOfMany();
+}
 
     public function kelompokHalaqah()
     {
@@ -43,5 +40,10 @@ class Siswa extends Model
     public function jilid()
     {
         return $this->belongsTo(Jilid::class);
+    }
+
+    public function guruQuran()
+    {
+        return $this->belongsTo(GuruQuran::class);
     }
 }

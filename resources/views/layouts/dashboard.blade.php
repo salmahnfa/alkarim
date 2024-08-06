@@ -120,23 +120,7 @@
                             </div>
                         </div>
                         <ul class="nav">
-                            @switch(Auth::user()->role_id)
-                                @case(1)
-                                    @include('layouts.components')
-                                    @break
-                                @case(2)
-                                    @include('ppq.components')
-                                    @break
-                                @case(3)
-                                    @include('admin_unit.components')
-                                    @break
-                                @case(4)
-                                    @include('guru_quran.components')
-                                    @break
-                                @default
-                                    <div class="alert alert-danger">Error: Unknown role {{ Auth::user()->role_id }}</div>
-                            @endswitch
-
+                            @include('layouts.components')
                             <li class="nav-item">
                                 <a href="{{ route('logout') }}">
                                     <i class="fas fa-sign-out-alt"></i>

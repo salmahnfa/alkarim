@@ -20,6 +20,40 @@
                         </li>
                     </ul>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Cari Kelompok Halaqah</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form">
+                                    <div class="form-group form-show-validation row">
+                                        <label class="col-lg-1 col-md-3 col-sm-4 text-right mt-sm-2">Unit</label>
+                                        <div class="col-lg-4 col-md-9 col-sm-8">
+                                            <select class="form-control pt-0 pb-0" id="select-unit">
+                                                <option value="">Semua</option>
+                                                @foreach ($units as $unit)
+                                                    <option value="{{ $unit->id }}">{{ $unit->nama }} </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="form">
+                                    <div class="form-group from-show-notify row">
+                                        <div class="col-lg-4 col-md-9 col-sm-12">
+                                            <button id="displayData" class="btn btn-success">Tampilkan</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
@@ -33,48 +67,7 @@
                                 </select>
                             </div>
                             <div class="card-body">
-                                <div class="table-responsive">
-                                    <table id="basic-datatables" class="display table table-striped table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Pengampu</th>
-                                                <th>Kelompok</th>
-                                                <th>Siswa</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($guru_qurans as $guru_quran)
-                                                <tr>
-                                                    @php
-                                                        $totalKel = $guru_quran->kelompokHalaqahs->count() + 1;
-                                                    @endphp
-                                                    <td rowspan="{{ $totalKel }}">{{ $loop->iteration }}</td>
-                                                    <td rowspan="{{ $totalKel }}">{{ $guru_quran->user->nama }}</td>
-                                                </tr>
-                                                @foreach ($guru_quran->kelompokHalaqahs as $kelompok_halaqah)
-                                                    <tr>
-                                                        <td>
-                                                            {{ $kelompok_halaqah->kelas->nama }} -
-                                                            {{ $kelompok_halaqah->grade }}
-                                                        </td>
-                                                        <td>
-                                                            @foreach ($kelompok_halaqah->siswas as $siswa)
-                                                                {{ $siswa->nama }}<br>
-                                                            @endforeach
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            @endforeach
-                                            @if (!$guru_qurans->count())
-                                                <tr>
-                                                    <td colspan="9" class="text-center">Belum ada data yang dimasukkan.
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        </tbody>
-                                    </table>
-                                </div>
+                                {{ $dataTable->table(['class' => 'display table table-striped table-hover']) }}
                             </div>
                         </div>
                     </div>
@@ -85,59 +78,22 @@
 @endsection
 
 @section('script')
+    {{ $dataTable->scripts() }}
     <script>
         $(document).ready(function() {
-            // $('#basic-datatables').DataTable();
-
-            $('#multi-filter-select').DataTable({
-                "pageLength": 5,
-                initComplete: function() {
-                    this.api().columns().every(function() {
-                        var column = this;
-                        var select = $(
-                                '<select class="form-control"><option value=""></option></select>'
-                            )
-                            .appendTo($(column.footer()).empty())
-                            .on('change', function() {
-                                var val = $.fn.dataTable.util.escapeRegex(
-                                    $(this).val()
-                                );
-
-                                column
-                                    .search(val ? '^' + val + '$' : '', true, false)
-                                    .draw();
-                            });
-
-                        column.data().unique().sort().each(function(d, j) {
-                            select.append('<option value="' + d + '">' + d +
-                                '</option>')
-                        });
-                    });
-                }
-            });
-
-            // Add Row
-            $('#add-row').DataTable({
-                "pageLength": 5,
-            });
-
-            var action =
-                '<td> <div class="form-button-action"> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
-
-            $('#addRowButton').click(function() {
-                $('#add-row').dataTable().fnAddData([
-                    $("#addName").val(),
-                    $("#addPosition").val(),
-                    $("#addOffice").val(),
-                    action
-                ]);
-                $('#addRowModal').modal('hide');
-
-            });
-
             $('#select-tahun-ajaran').change(function() {
-                window.location = '{{route('admin_pusat.kelompok_halaqah')}}/' + $(this).val()
+                window.location = '{{ route('admin_pusat.kelompok_halaqah') }}/' + $(this).val()
             })
+
+            $(document).on('click', '#displayData', filterTable)
+
+            function filterTable() {
+                filterUnit = $('#select-unit').val();
+                LaravelDataTables['{{ $dataTable->getTableId() }}'].column(1).search(filterUnit);
+                if(filterUnit){
+                }
+                LaravelDataTables['{{ $dataTable->getTableId() }}'].draw();
+            }
         });
     </script>
 @endsection

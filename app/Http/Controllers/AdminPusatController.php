@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\DataTables\KelompokHalaqahsDataTable;
 use App\Models\User;
 use App\Models\Ujian;
 use App\Models\GuruQuran;
 use App\Models\KelompokHalaqah;
 use App\Models\Nilai;
 use App\Models\Siswa;
+use App\Models\Unit;
 use Illuminate\Support\Facades\Date;
 
 class AdminPusatController extends Controller
@@ -75,7 +77,7 @@ class AdminPusatController extends Controller
         return view('admin_pusat.users.guru_quran', $data);
     }
 
-    public function kelompok_halaqah(?string $tahun_ajaran_start = null, ?string $tahun_ajaran_end = null)
+    public function kelompok_halaqah(Request $request, KelompokHalaqahsDataTable $dataTable, ?string $tahun_ajaran_start = null, ?string $tahun_ajaran_end = null)
     {
         if (!$tahun_ajaran_start) {
             $yearNow = Date::now()->year;
@@ -84,18 +86,16 @@ class AdminPusatController extends Controller
             $tahun_ajaran = "$tahun_ajaran_start/$tahun_ajaran_end";
         }
 
-        $guru_qurans = GuruQuran::with(['kelompokHalaqahs.siswas' => function ($query) use ($tahun_ajaran) {
-            $query->wherePivot('tahun_ajaran', $tahun_ajaran);
-        }])->with('kelompokHalaqahs.kelas')->get();
+        $units = Unit::select('id', 'nama')->orderBy('nama')->get();
 
         $data = [
-            'guru_qurans' => $guru_qurans,
+            'units' => $units,
             'title' => 'Kelompok Halaqah',
             'page_title' => 'Kelompok Halaqah',
             'tahun_ajaran' => $tahun_ajaran
         ];
 
-        return view('admin_pusat.kelompok_halaqah', $data);
+        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('admin_pusat.kelompok_halaqah', $data);
     }
 
     public function rekap_nilai()

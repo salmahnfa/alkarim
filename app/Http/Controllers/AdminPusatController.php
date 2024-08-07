@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\DataTables\KelompokHalaqahsDataTable;
+use App\DataTables\NilaisDataTable;
 use App\Models\User;
 use App\Models\Ujian;
 use App\Models\GuruQuran;
@@ -77,7 +78,7 @@ class AdminPusatController extends Controller
         return view('admin_pusat.users.guru_quran', $data);
     }
 
-    public function kelompok_halaqah(Request $request, KelompokHalaqahsDataTable $dataTable)
+    public function kelompok_halaqah(KelompokHalaqahsDataTable $dataTable)
     {
         $yearNow = Date::now()->year;
         $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
@@ -85,26 +86,33 @@ class AdminPusatController extends Controller
         $units = Unit::select('id', 'nama')->orderBy('nama')->get();
 
         $data = [
-            'units' => $units,
             'title' => 'Kelompok Halaqah',
             'page_title' => 'Kelompok Halaqah',
+            'units' => $units,
             'tahun_ajaran' => $tahun_ajaran
         ];
 
-        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('content.kelompok_halaqah', $data);
+        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('contents.components.kelompok_halaqah', $data);
     }
 
-    public function rekap_nilai()
+    public function rekap_nilai(NilaisDataTable $dataTable)
     {
+        $yearNow = Date::now()->year;
+        $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
+
+        $units = Unit::select('id', 'nama')->orderBy('nama')->get();
+
         $nilais = Nilai::with('siswa.guruQuran')->get();
 
         $data = [
             'nilais' => $nilais,
             'title' => 'Rekap Nilai',
-            'page_title' => 'Rekap Nilai'
+            'page_title' => 'Rekap Nilai',
+            'units' => $units,
+            'tahun_ajaran' => $tahun_ajaran
         ];
 
-        return view('admin_pusat.rekap_nilai', $data);
+        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('admin_pusat.rekap_nilai', $data);
     }
 
     public function ujian()

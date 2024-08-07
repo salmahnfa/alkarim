@@ -17,6 +17,7 @@ class Nilai extends Model
         'nilai',
         'tanggal_ujian',
         'tahun_ajaran',
+        'unit_id',
     ];
 
     public function siswa()
@@ -32,5 +33,10 @@ class Nilai extends Model
     public function guruQuran()
     {
         return $this->belongsTo(GuruQuran::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
 }

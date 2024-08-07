@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Date;
 if (!function_exists('generateTahunAjaran')) {
     function generateTahunAjaran()
     {
-        $start = config('app.tahun_ajaran_start');
+        $start = config('alkarim.tahun_ajaran_start');
         $end = Date::now()->year;
         $tahunAjaran = [];
 

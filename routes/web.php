@@ -18,7 +18,7 @@ Route::get('/welcome', [LoginController::class, 'index'])->name('welcome');
 Route::middleware(['auth'])->group(function () {
     Route::group(['prefix' => 'admin-pusat', 'checkRole:admin-pusat'], function () {
         Route::get('/dashboard', [AdminPusatController::class, 'dashboard'])->name('admin_pusat.dashboard');
-        Route::get('/kelompok-halaqah/{tahun_ajaran_start?}/{tahun_ajaran_end?}', [AdminPusatController::class, 'kelompok_halaqah'])->name('admin_pusat.kelompok_halaqah');
+        Route::get('/kelompok-halaqah', [AdminPusatController::class, 'kelompok_halaqah'])->name('admin_pusat.kelompok_halaqah');
         Route::get('/rekap-nilai', [AdminPusatController::class, 'rekap_nilai'])->name('admin_pusat.rekap_nilai');
         Route::get('/ujian', [AdminPusatController::class, 'ujian'])->name('admin_pusat.ujian');
         Route::prefix('users')->group(function () {

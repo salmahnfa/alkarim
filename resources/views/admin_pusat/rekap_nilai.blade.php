@@ -1,136 +1,157 @@
 @extends('layouts.dashboard')
 
 @section('content')
-        <div class="main-panel">
-			<div class="content">
-				<div class="page-inner">
-                    <div class="page-header">
-						<h4 class="page-title">{{ $page_title }}</h4>
-						<ul class="breadcrumbs">
-							<li class="nav-home">
-								<a href="#">
-									<i class="flaticon-home"></i>
-								</a>
-							</li>
-							<li class="separator">
-								<i class="flaticon-right-arrow"></i>
-							</li>
-							<li class="nav-item">
-								<a href="#">{{ $page_title }}</a>
-							</li>
-						</ul>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<div class="card">
-								<div class="card-header">
-									<h4 class="card-title">Rekap Nilai Siswa</h4>
-								</div>
-								<div class="card-body">
-									<div class="table-responsive">
-										<table id="multi-filter-select" class="display table table-striped table-hover" >
-											<thead>
-												<tr>
-													<th>Tanggal Ujian</th>
-													<th>Nama Siswa</th>
-													<th>Ujian</th>
-													<th>Deskripsi</th>
-													<th>Nilai</th>
-													<th>Status</th>
-												</tr>
-											</thead>
-											<tfoot>
-												<tr>
-													<th>Tanggal Ujian</th>
-													<th>Nama Siswa</th>
-													<th>Ujian</th>
-													<th>Deskripsi</th>
-													<th>Nilai</th>
-													<th>Status</th>
-												</tr>
-											</tfoot>
-											<tbody>
-												@foreach ($nilais as $nilai)
-													<tr>
-														<td>{{ $nilai->tanggal_ujian }}</td>
-														<td>{{ $nilai->siswa->nama }}</td>
-														<td>{{ $nilai->ujian->nama }}</td>
-														<td>{{ $nilai->deskripsi }}</td>
-														<td>{{ $nilai->guruQuran->user->nama }}</td>
-														<td>{{ $nilai->nilai }}</td>
-														<td>
-															@if ($nilai->nilai >= 75)
-																Lulus
-															@else
-																Tidak Lulus
-															@endif
-														</td>
-													</tr>
-												@endforeach
-												@if (!$nilais->count())
-												<tr>
-              										<td colspan="9" class="text-center">Belum ada data yang dimasukkan.</td>
-           										</tr>
-												@endif												
-											</tbody>
-										</table>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+    <div class="main-panel">
+        <div class="content">
+            <div class="page-inner">
+                <div class="page-header">
+                    <h4 class="page-title">{{ $page_title }}</h4>
+                    <ul class="breadcrumbs">
+                        <li class="nav-home">
+                            <a href="#">
+                                <i class="flaticon-home"></i>
+                            </a>
+                        </li>
+                        <li class="separator">
+                            <i class="flaticon-right-arrow"></i>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#">{{ $page_title }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Cari Rekap Nilai Siswa</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="form row px-0">
+                                    <div class="form-group form-show-validation row col-lg-6 col-md-6 col-12">
+                                        <label class="col-lg-3 col-md-4 col-sm-4 text-md-right text-left mt-sm-2">Tahun
+                                            Ajaran</label>
+                                        <div class="col-lg-9 col-md-8 col-sm-8">
+                                            <select class="form-control pt-0 pb-0" id="select-tahun-ajaran">
+                                                @foreach (generateTahunAjaran() as $tahun)
+                                                    <option value="{{ $tahun }}"
+                                                        {{ $tahun_ajaran == $tahun ? 'selected' : '' }}>
+                                                        {{ $tahun }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-show-validation row col-lg-6 col-md-6 col-12">
+                                        <label
+                                            class="col-lg-3 col-md-4 col-sm-4 text-md-right text-left mt-sm-2">Unit</label>
+                                        <div class="col-lg-9 col-md-8 col-sm-8">
+                                            <select class="form-control pt-0 pb-0" id="select-unit">
+                                                <option value="">Semua</option>
+                                                @foreach ($units as $unit)
+                                                    <option value="{{ $unit->id }}">{{ $unit->nama }} </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-show-validation row col-lg-6 col-md-6 col-12">
+                                        <label class="col-lg-3 col-md-4 col-sm-4 text-md-right text-left mt-sm-2">Tanggal
+                                            Ujian</label>
+                                        <div class="col-lg-9 col-md-8 col-sm-8">
+                                            <div class="input-group input-daterange">
+                                                <input id="filter-start-date" type="text" class="form-control"
+                                                    value="">
+                                                <span class="input-group-text">
+                                                    sampai
+                                                </span>
+                                                <input id="filter-end-date" type="text" class="form-control"
+                                                    value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-action">
+                                <button id="submitFilter" class="btn btn-success">Tampilkan</button>
+                                <button id="resetFilter" class="btn btn-danger">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between">
+                                <h4 class="card-title">Daftar Rekap Nilai Siswa
+                                    <span id="span-tahun-ajaran">{{ $tahun_ajaran }}</span>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                {{ $dataTable->table(['class' => 'display table table-striped table-hover']) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
+
 @section('script')
-	<script >
-		$(document).ready(function() {
-			$('#basic-datatables').DataTable({
-			});
+    {{ $dataTable->scripts() }}
+    <script>
+        $(document).ready(function() {
+            initFilterDate();
 
-			$('#multi-filter-select').DataTable( {
-				"pageLength": 5,
-				initComplete: function () {
-					this.api().columns().every( function () {
-						var column = this;
-						var select = $('<select class="form-control"><option value=""></option></select>')
-						.appendTo( $(column.footer()).empty() )
-						.on( 'change', function () {
-							var val = $.fn.dataTable.util.escapeRegex(
-								$(this).val()
-								);
+            $(document).on('click', '#submitFilter', filterTable)
+                .on('click', '#resetFilter', resetFilter)
+        });
 
-							column
-							.search( val ? '^'+val+'$' : '', true, false )
-							.draw();
-						} );
+        function initFilterDate() {
+            filterStartDate = $('#filter-start-date').datepicker({
+                format: "dd M yyyy",
+                clearBtn: true,
+            });
 
-						column.data().unique().sort().each( function ( d, j ) {
-							select.append( '<option value="'+d+'">'+d+'</option>' )
-						} );
-					} );
-				}
-			});
+            filterEndDate = $('#filter-end-date').datepicker({
+                format: "dd M yyyy",
+                endDate: "{{ Carbon\Carbon::now() }}",
+                clearBtn: true,
+            });
 
-			// Add Row
-			$('#add-row').DataTable({
-				"pageLength": 5,
-			});
+            filterStartDate.datepicker().on('changeDate', function(date) {
+                filterEndDate.datepicker('setStartDate', date.date);
+            })
 
-			var action = '<td> <div class="form-button-action"> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
+            filterEndDate.datepicker().on('changeDate', function(date) {
+                filterStartDate.datepicker('setEndDate', date.date);
+            })
+        }
 
-			$('#addRowButton').click(function() {
-				$('#add-row').dataTable().fnAddData([
-					$("#addName").val(),
-					$("#addPosition").val(),
-					$("#addOffice").val(),
-					action
-					]);
-				$('#addRowModal').modal('hide');
+        function filterTable() {
+            filterUnit = $('#select-unit').val();
+            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(2).search(filterUnit);
 
-			});
-		});
-	</script>
+            filterTahunAjaran = $('#select-tahun-ajaran').val()
+            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(9).search(filterTahunAjaran);
+
+            filterStartDate = $('#filter-start-date').val()
+            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(1).search(filterStartDate);
+
+            LaravelDataTables['{{ $dataTable->getTableId() }}'].draw();
+
+            $('#span-tahun-ajaran').text(filterTahunAjaran)
+        }
+
+        function resetFilter() {
+            $('#select-unit').val('');
+            $('#select-tahun-ajaran').val('{{ $tahun_ajaran }}')
+            $('#span-tahun-ajaran').text('{{ $tahun_ajaran }}')
+
+            LaravelDataTables['{{ $dataTable->getTableId() }}']
+                .column(1).search('')
+                .column(5).search('')
+                .draw();
+        }
+    </script>
 @endsection

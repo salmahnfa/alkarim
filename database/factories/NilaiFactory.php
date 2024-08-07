@@ -20,13 +20,16 @@ class NilaiFactory extends Factory
      */
     public function definition(): array
     {
+        $guru = GuruQuran::inRandomOrder()->first();
+
         return [
             'siswa_id' => Siswa::inRandomOrder()->first()->id,
             'ujian_id' => Ujian::inRandomOrder()->first()->id,
             'deskripsi' => 'Ujian ' . $this->faker->numberBetween(1, 10),
-            'guru_quran_id' => GuruQuran::inRandomOrder()->first()->id,
+            'guru_quran_id' => $guru->id,
             'nilai' => fake()->numberBetween(0, 100),
             'tanggal_ujian' => fake()->dateTimeBetween('2024-01-01', '2024-07-18'),
+            'unit_id' => $guru->unit_id,
         ];
     }
 }

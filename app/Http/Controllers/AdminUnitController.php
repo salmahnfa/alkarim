@@ -20,6 +20,24 @@ class AdminUnitController extends Controller
         return view('admin_unit.dashboard', $data);
     }
 
+    public function daftarSiswa()
+    {
+        $adminUnit = auth()->user()->adminUnit;
+        $unitId = $adminUnit->unit_id;
+
+        $siswas = Siswa::whereHas('kelas', function ($query) use ($unitId) {
+            $query->where('kelas.unit_id', $unitId);
+        })->get();
+
+        $data = [
+            'siswas' => $siswas,
+            'title' => 'Siswa',
+            'page_title' => 'Siswa'
+        ];
+
+        return view('admin_unit.daftar_siswa', $data);
+    }
+
     public function kelompok_halaqah()
     {
         $adminUnit = auth()->user()->adminUnit;

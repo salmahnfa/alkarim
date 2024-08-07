@@ -26,12 +26,26 @@ class KelompokHalaqahsDataTable extends DataTable
                 return $data->kelas->nama . ' - ' . $data->grade;
             })
             ->addColumn('siswa', function (KelompokHalaqah $data) {
-                $siswas = '';
+                $siswas = "<table class='table table-bordered'>
+                    <thead>
+                        <tr>
+                            <th>NISN</th>
+                            <th>Nama</th>
+                            <th>Jilid</th>
+                            <th>Surah</th>
+                        </tr>
+                    </thead>";
+
                 foreach ($data->siswas as $siswa) {
-                    $siswas .= $siswa->nisn . ' - ' . $siswa->nama . '</br>';
+                    $siswas .= "<tr class='bg-white'><td>" . $siswa->nisn . "</td>".
+                    "<td>" . $siswa->nama . '</td>'.
+                    "<td>" . $siswa->jilid->nama . '</td>'.
+                    "<td>" . $siswa->surah->nama. '</td></tr>';
                 }
+
+                $siswas .= "</tbody></table>";
+
                 return $siswas;
-                return '<a href="#">Html Column</a>';
             })
             ->addColumn('unit', function (KelompokHalaqah $data) {
                 return $data->unit->nama;

@@ -17,7 +17,7 @@
                 }
             });
         </script>
-        
+
         <!-- CSS Files -->
         <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
         <link rel="stylesheet" href="/assets/css/azzara.min.css">
@@ -25,7 +25,7 @@
     <body class="login">
         <div class="wrapper wrapper-login">
             <div class="container container-login animated fadeIn">
-                <h3 class="text-center">Sign In To Admin</h3>
+                <h3 class="text-center">Sign In To Al Karim</h3>
                 <form method="POST" action="{{ route('login.post') }}">
                     @csrf
                     <div class="login-form">
@@ -40,14 +40,14 @@
                                 <i class="flaticon-interface"></i>
                             </div>
                         </div>
-                        <div class="row form-sub m-0">
+                        {{-- <div class="row form-sub m-0">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" id="rememberme">
                                 <label class="custom-control-label" for="rememberme">Remember Me</label>
                             </div>
-                            
+
                             <a href="#" class="link float-right">Forget Password ?</a>
-                        </div>
+                        </div> --}}
                         <div class="form-action mb-3">
                             <button type="submit" class="btn btn-primary btn-rounded btn-login">Sign In</button>
                         </div>

@@ -77,14 +77,10 @@ class AdminPusatController extends Controller
         return view('admin_pusat.users.guru_quran', $data);
     }
 
-    public function kelompok_halaqah(Request $request, KelompokHalaqahsDataTable $dataTable, ?string $tahun_ajaran_start = null, ?string $tahun_ajaran_end = null)
+    public function kelompok_halaqah(Request $request, KelompokHalaqahsDataTable $dataTable)
     {
-        if (!$tahun_ajaran_start) {
-            $yearNow = Date::now()->year;
-            $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
-        } else {
-            $tahun_ajaran = "$tahun_ajaran_start/$tahun_ajaran_end";
-        }
+        $yearNow = Date::now()->year;
+        $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
 
         $units = Unit::select('id', 'nama')->orderBy('nama')->get();
 
@@ -95,7 +91,7 @@ class AdminPusatController extends Controller
             'tahun_ajaran' => $tahun_ajaran
         ];
 
-        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('admin_pusat.kelompok_halaqah', $data);
+        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('content.kelompok_halaqah', $data);
     }
 
     public function rekap_nilai()

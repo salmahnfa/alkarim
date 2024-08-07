@@ -28,10 +28,24 @@
                                 <div class="card-title">Cari Kelompok Halaqah</div>
                             </div>
                             <div class="card-body">
-                                <div class="form">
-                                    <div class="form-group form-show-validation row">
-                                        <label class="col-lg-1 col-md-3 col-sm-4 text-right mt-sm-2">Unit</label>
-                                        <div class="col-lg-4 col-md-9 col-sm-8">
+                                <div class="form row px-0">
+                                    <div class="form-group form-show-validation row col-lg-6 col-md-6 col-12">
+                                        <label class="col-lg-3 col-md-4 col-sm-4 text-md-right text-left mt-sm-2">Tahun
+                                            Ajaran</label>
+                                        <div class="col-lg-9 col-md-8 col-sm-8">
+                                            <select class="form-control pt-0 pb-0" id="select-tahun-ajaran">
+                                                @foreach (generateTahunAjaran() as $tahun)
+                                                    <option value="{{ $tahun }}"
+                                                        {{ $tahun_ajaran == $tahun ? 'selected' : '' }}>
+                                                        {{ $tahun }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-show-validation row col-lg-6 col-md-6 col-12">
+                                        <label
+                                            class="col-lg-3 col-md-4 col-sm-4 text-md-right text-left mt-sm-2">Unit</label>
+                                        <div class="col-lg-9 col-md-8 col-sm-8">
                                             <select class="form-control pt-0 pb-0" id="select-unit">
                                                 <option value="">Semua</option>
                                                 @foreach ($units as $unit)
@@ -42,14 +56,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-footer">
-                                <div class="form">
-                                    <div class="form-group from-show-notify row">
-                                        <div class="col-lg-4 col-md-9 col-sm-12">
-                                            <button id="displayData" class="btn btn-success">Tampilkan</button>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="card-action">
+                                <button id="submitFilter" class="btn btn-success">Tampilkan</button>
+                                <button id="resetFilter" class="btn btn-danger">Reset</button>
                             </div>
                         </div>
                     </div>
@@ -58,13 +67,9 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between">
-                                <h4 class="card-title">Daftar Siswa Halaqah</h4>
-                                <select class="form-control input-fixed" id="select-tahun-ajaran">
-                                    @foreach (generateTahunAjaran() as $tahun)
-                                        <option value="{{ $tahun }}" {{ $tahun_ajaran == $tahun ? 'selected' : '' }}>
-                                            {{ $tahun }}</option>
-                                    @endforeach
-                                </select>
+                                <h4 class="card-title">Daftar Siswa Halaqah
+                                    <span id="span-tahun-ajaran">{{ $tahun_ajaran }}</span>
+                                </h4>
                             </div>
                             <div class="card-body">
                                 {{ $dataTable->table(['class' => 'display table table-striped table-hover']) }}
@@ -81,18 +86,30 @@
     {{ $dataTable->scripts() }}
     <script>
         $(document).ready(function() {
-            $('#select-tahun-ajaran').change(function() {
-                window.location = '{{ route('admin_pusat.kelompok_halaqah') }}/' + $(this).val()
-            })
-
-            $(document).on('click', '#displayData', filterTable)
+            $(document).on('click', '#submitFilter', filterTable)
+            .on('click', '#resetFilter', resetFilter)
 
             function filterTable() {
                 filterUnit = $('#select-unit').val();
                 LaravelDataTables['{{ $dataTable->getTableId() }}'].column(1).search(filterUnit);
-                if(filterUnit){
-                }
+
+                filterTahunAjaran = $('#select-tahun-ajaran').val()
+                LaravelDataTables['{{ $dataTable->getTableId() }}'].column(5).search(filterTahunAjaran);
+
                 LaravelDataTables['{{ $dataTable->getTableId() }}'].draw();
+
+                $('#span-tahun-ajaran').text(filterTahunAjaran)
+            }
+
+            function resetFilter() {
+                $('#select-unit').val('');
+                $('#select-tahun-ajaran').val('{{ $tahun_ajaran }}')
+                $('#span-tahun-ajaran').text('{{ $tahun_ajaran }}')
+
+                LaravelDataTables['{{ $dataTable->getTableId() }}']
+                .column(1).search('')
+                .column(5).search('')
+                .draw();
             }
         });
     </script>

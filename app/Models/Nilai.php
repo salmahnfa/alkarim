@@ -16,6 +16,7 @@ class Nilai extends Model
         'guru_quran_id',
         'nilai',
         'tanggal_ujian',
+        'tahun_ajaran',
     ];
 
     public function siswa()

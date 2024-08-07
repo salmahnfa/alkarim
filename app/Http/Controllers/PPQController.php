@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\KelompokHalaqahsDataTable;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\GuruQuran;
 use App\Models\Nilai;
+use App\Models\Unit;
+use Illuminate\Support\Facades\Date;
 
 class PPQController extends Controller
 {
@@ -18,17 +21,21 @@ class PPQController extends Controller
         return view('ppq.dashboard', $data);
     }
 
-    public function kelompok_halaqah()
+    public function kelompok_halaqah(Request $request, KelompokHalaqahsDataTable $dataTable)
     {
-        $guru_qurans = GuruQuran::with('siswa')->get();
+        $yearNow = Date::now()->year;
+        $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
+
+        $units = Unit::select('id', 'nama')->orderBy('nama')->get();
 
         $data = [
-            'guru_qurans' => $guru_qurans,
+            'units' => $units,
             'title' => 'Kelompok Halaqah',
-            'page_title' => 'Kelompok Halaqah'
+            'page_title' => 'Kelompok Halaqah',
+            'tahun_ajaran' => $tahun_ajaran
         ];
 
-        return view('ppq.kelompok_halaqah', $data);
+        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('content.kelompok_halaqah', $data);
     }
 
     public function rekap_nilai()

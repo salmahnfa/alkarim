@@ -13,7 +13,8 @@ class KelompokHalaqah extends Model
         'unit_id',
         'kelas_id',
         'grade',
-        'guru_quran_id'
+        'guru_quran_id',
+        'tahun_ajaran',
     ];
 
     public function unit()

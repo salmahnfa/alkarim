@@ -4,7 +4,6 @@ namespace App\DataTables;
 
 use App\Models\KelompokHalaqah;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
-use Illuminate\Support\Facades\Date;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
@@ -49,6 +48,9 @@ class KelompokHalaqahsDataTable extends DataTable
     public function query(KelompokHalaqah $model): QueryBuilder
     {
         $tahun_ajaran = $this->tahun_ajaran;
+        if (isset($this->request->columns[5]['search']['value'])) {
+            $tahun_ajaran =  $this->request->columns[5]['search']['value'];
+        }
 
         $query = $model->newQuery()->leftJoin('guru_qurans', 'kelompok_halaqahs.id', 'guru_qurans.id')
             ->leftJoin('users', 'guru_qurans.user_id', 'users.id')
@@ -59,9 +61,10 @@ class KelompokHalaqahsDataTable extends DataTable
                 'kelas',
                 'unit'
             ])
+            ->where('kelompok_halaqahs.tahun_ajaran', $tahun_ajaran)
             ->select('kelompok_halaqahs.*', 'users.nama as pengampu')
             ->orderBy('unit_id')
-            ->orderBy('guru_quran_id');
+            ->orderBy('guru_quran_id', 'desc');
 
         if (isset($this->request->columns[1]['search']['value'])) {
             $query->where('kelompok_halaqahs.unit_id', '=', $this->request->columns[1]['search']['value']);
@@ -93,6 +96,7 @@ class KelompokHalaqahsDataTable extends DataTable
             Column::make('pengampu'),
             Column::make('kelompok'),
             Column::make('siswa')->orderable(false),
+            Column::make('tahun_ajaran')->hidden(),
         ];
     }
 

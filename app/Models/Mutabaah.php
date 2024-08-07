@@ -15,6 +15,7 @@ class Mutabaah extends Model
         'ziyadah',
         'murojaah',
         'tilawah',
+        'tahun_ajaran',
     ];
 
     public function siswa()

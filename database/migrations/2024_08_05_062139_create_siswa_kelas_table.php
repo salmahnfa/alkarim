@@ -11,23 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('siswas', function (Blueprint $table) {
+        Schema::create('siswa_kelas', function (Blueprint $table) {
             $table->id();
-            $table->string('nisn')->nullable();
-            $table->string('nama');
+            $table->foreignId('siswa_id');
             $table->foreignId('unit_id');
             $table->foreignId('kelas_id');
             $table->enum('grade', ['A', 'B', 'C']);
             $table->foreignId('kelompok_halaqah_id')->nullable();
-            $table->foreignId('surah_id');
-            $table->foreignId('jilid_id');
-            $table->timestamps();
+            $table->string('tahun_ajaran');
 
+            $table->foreign('siswa_id')->references('id')->on('siswas');
             $table->foreign('unit_id')->references('id')->on('units');
             $table->foreign('kelas_id')->references('id')->on('kelas');
             $table->foreign('kelompok_halaqah_id')->references('id')->on('kelompok_halaqahs');
-            $table->foreign('surah_id')->references('id')->on('surahs');
-            $table->foreign('jilid_id')->references('id')->on('jilids');
+            $table->timestamps();
         });
     }
 
@@ -36,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('siswas');
+        Schema::dropIfExists('siswa_kelas');
     }
 };

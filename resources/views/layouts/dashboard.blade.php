@@ -23,7 +23,7 @@
         <link rel="stylesheet" href="/assets/css/azzara.min.css">
 
         <!-- CSS Just for demo purpose, don't include it in your project -->
-        <link rel="stylesheet" href="/assets/css/demo.css">
+        {{-- <link rel="stylesheet" href="/assets/css/demo.css"> --}}
     </head>
     <body>
         <div class="wrapper">
@@ -33,7 +33,7 @@
             <div class="main-header" data-background-color="purple">
                 <!-- Logo Header -->
                 <div class="logo-header">
-                    
+
                     <a href="index.html" class="logo">
                         <img src="/assets/img/logoazzara.svg" alt="navbar brand" class="navbar-brand">
                     </a>
@@ -53,7 +53,7 @@
 
                 <!-- Navbar Header -->
                 <nav class="navbar navbar-header navbar-expand-lg">
-                    
+
                     <div class="container-fluid">
                         <div class="collapse" id="search-nav">
                             <form class="navbar-left navbar-form nav-search mr-md-3">
@@ -120,23 +120,7 @@
                             </div>
                         </div>
                         <ul class="nav">
-                            @switch(Auth::user()->role_id)
-                                @case(1)
-                                    @include('admin_pusat.components')
-                                    @break
-                                @case(2)
-                                    @include('ppq.components')
-                                    @break
-                                @case(3)
-                                    @include('admin_unit.components')
-                                    @break
-                                @case(4)
-                                    @include('guru_quran.components')
-                                    @break
-                                @default
-                                    <div class="alert alert-danger">Error: Unknown role {{ Auth::user()->role_id }}</div>
-                            @endswitch
-
+                            @include('layouts.components')
                             <li class="nav-item">
                                 <a href="{{ route('logout') }}">
                                     <i class="fas fa-sign-out-alt"></i>
@@ -150,7 +134,7 @@
             <!-- End Sidebar -->
 
             @yield('content')
-            
+
             <!-- Custom template | don't include it in your project! -->
             <div class="custom-template">
                 <div class="title">Settings</div>
@@ -231,8 +215,8 @@
     <script src="/assets/js/ready.min.js"></script>
 
     <!-- Azzara DEMO methods, don't include it in your project! -->
-    <script src="/assets/js/setting-demo.js"></script>
-    <script src="/assets/js/demo.js"></script>
+    {{-- <script src="/assets/js/setting-demo.js"></script>
+    <script src="/assets/js/demo.js"></script> --}}
 
     <script>
         $(document).ready(function() {
@@ -265,6 +249,6 @@
     </script>
 
     @yield('script')
-    
+
     </body>
 </html>

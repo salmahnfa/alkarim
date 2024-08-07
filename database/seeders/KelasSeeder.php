@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Kelas;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Unit;
 use Illuminate\Database\Seeder;
 
 class KelasSeeder extends Seeder
@@ -13,15 +13,22 @@ class KelasSeeder extends Seeder
      */
     public function run(): void
     {
-        $kelasNames = [];
-        for ($i = 1; $i <= 3; $i++) {
-            for ($j = 0; $j < 2; $j++) {
-                $kelasNames[] = $i . chr(65 + $j);
+        $dataKelas = [];
+        $unitIds = Unit::all()->pluck('id')->toArray();
+        foreach ($unitIds as $unitId) {
+            for ($i = 1; $i <= 3; $i++) {
+                for ($j = 0; $j < 2; $j++) {
+                    $dataKelas[] = [
+                        'nama' =>  $i . chr(65 + $j),
+                        'unit_id' => $unitId
+                    ];
+
+                }
             }
         }
 
-        foreach ($kelasNames as $nama) {
-            Kelas::create(['nama' => $nama]);
+        foreach ($dataKelas as $kelas) {
+            Kelas::create($kelas);
         }
     }
 }

@@ -58,7 +58,7 @@
 									<div class="form">
 										<div class="form-group from-show-notify row">
 											<div class="col-lg-4 col-md-9 col-sm-12">
-												<button id="displayData" class="btn btn-success">Tampilkan</button>
+												<button id="displayKelompokHalaqah" class="btn btn-success">Tampilkan</button>
 											</div>
 										</div>
 									</div>
@@ -137,7 +137,7 @@
 @section('script')
 <script>
     $(document).ready(function() {
-		$('#displayData').on('click', function() {
+		$('#displayKelompokHalaqah').on('click', function() {
 			var kelompokHalaqahId = $('#dropdown-kelompok-halaqah').val();
 			var tableRows = $('#nilai-datatables tbody tr');
 			tableRows.hide();

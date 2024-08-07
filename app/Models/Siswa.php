@@ -27,7 +27,8 @@ class Siswa extends Model
     
     public function kelas()
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->belongsToMany(Kelas::class, 'siswa_kelas')
+            ->withPivot('kelompok_halaqah_id', 'grade');
     }
 
     public function kelompokHalaqah()

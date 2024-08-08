@@ -49,27 +49,3 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/nilai', [GuruQuranController::class, 'nilai'])->name('guru_quran.nilai');
     });
 });
-
-Route::group(['prefix' => 'ppq', 'checkRole:ppq'], function () {
-    Route::get('/dashboard', [PPQController::class, 'dashboard'])->name('ppq.dashboard');
-    Route::get('/kelompok-halaqah', [PPQController::class, 'kelompok_halaqah'])->name('ppq.kelompok_halaqah');
-    Route::get('/rekap-nilai', [PPQController::class, 'rekap_nilai'])->name('ppq.rekap_nilai');
-});
-
-Route::group(['prefix' => 'admin-unit', 'checkRole:admin-unit'], function () {
-    Route::get('/dashboard', [AdminUnitController::class, 'dashboard'])->name('admin_unit.dashboard');
-    Route::get('/kelompok-halaqah', [AdminUnitController::class, 'kelompok_halaqah'])->name('admin_unit.kelompok_halaqah');
-    Route::get('/rekap-nilai', [AdminUnitController::class, 'rekap_nilai'])->name('admin_unit.rekap_nilai');
-});
-
-Route::group(['prefix' => 'guru-quran', 'checkRole:guru-quran'], function () {
-    Route::get('/dashboard', [GuruQuranController::class, 'dashboard'])->name('guru_quran.dashboard');
-    Route::get('/kelompok-halaqah', [GuruQuranController::class, 'kelompok_halaqah'])->name('guru_quran.kelompok_halaqah');
-    Route::get('/mutabaah', [GuruQuranController::class, 'mutabaah'])->name('guru_quran.mutabaah');
-    Route::get('/nilai', [GuruQuranController::class, 'nilai'])->name('guru_quran.nilai');
-    Route::prefix('nilais')->group(function () {
-        Route::get('/tahsin', [GuruQuranController::class, 'tahsin'])->name('guru_quran.nilais.tahsin');
-        Route::get('/tasmi', [GuruQuranController::class, 'tasmi'])->name('guru_quran.nilais.tasmi');
-        Route::get('/tahfidz', [GuruQuranController::class, 'tahfidz'])->name('guru_quran.nilais.tahfidz');
-    });
-});

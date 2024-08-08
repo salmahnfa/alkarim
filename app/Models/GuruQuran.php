@@ -20,8 +20,8 @@ class GuruQuran extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class, 'unit_id');
-    } 
-    
+    }
+
     public function siswa()
     {
         return $this->hasMany(Siswa::class, 'guru_quran_id', 'id');

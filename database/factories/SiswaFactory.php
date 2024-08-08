@@ -26,9 +26,9 @@ class SiswaFactory extends Factory
         return [
             'nisn' => fake()->numerify('##########'),
             'nama' => fake()->name(),
-            'unit_id' => Unit::inRandomOrder()->first()->id,
-            'kelas_id' => Kelas::inRandomOrder()->first()->id,
-            'grade' => fake()->randomElement(['A', 'B', 'C']),
+            // 'unit_id' => Unit::inRandomOrder()->first()->id,
+            // 'kelas_id' => Kelas::inRandomOrder()->first()->id,
+            // 'grade' => fake()->randomElement(['A', 'B', 'C']),
             'surah_id' => Surah::inRandomOrder()->first()->id,
             'jilid_id' => Jilid::inRandomOrder()->first()->id,
         ];

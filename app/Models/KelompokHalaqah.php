@@ -13,7 +13,8 @@ class KelompokHalaqah extends Model
         'unit_id',
         'kelas_id',
         'grade',
-        'guru_quran_id'
+        'guru_quran_id',
+        'tahun_ajaran',
     ];
 
     public function unit()
@@ -31,8 +32,8 @@ class KelompokHalaqah extends Model
         return $this->belongsTo(GuruQuran::class);
     }
 
-    public function siswa()
+    public function siswas()
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsToMany(Siswa::class, 'siswa_kelas');
     }
 }

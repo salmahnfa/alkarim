@@ -8,6 +8,7 @@ use App\Models\GuruQuran;
 use App\Models\Nilai;
 use App\Models\Siswa;
 use App\Models\KelompokHalaqah;
+use Illuminate\Support\Facades\Date;
 
 class AdminUnitController extends Controller
 {
@@ -20,14 +21,26 @@ class AdminUnitController extends Controller
         return view('admin_unit.dashboard', $data);
     }
 
-    public function kelompok_halaqah()
+    public function kelompok_halaqah(?string $tahun_ajaran_start = null, ?string $tahun_ajaran_end = null)
     {
+        if (!$tahun_ajaran_start) {
+            $yearNow = Date::now()->year;
+            $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
+        } else {
+            $tahun_ajaran = "$tahun_ajaran_start/$tahun_ajaran_end";
+        }
+
         $adminUnit = auth()->user()->adminUnit;
         $unitId = $adminUnit->unit_id;
 
         $kelompokHalaqahs = KelompokHalaqah::where('unit_id', $unitId)->get();
         $guruQurans = GuruQuran::where('unit_id', $unitId)->get();
-        $siswas = Siswa::where('unit_id', $unitId)->get();
+        $siswas = Siswa::
+
+        with(['kelas' => function ($query) use ($tahun_ajaran, $unitId) {
+            $query->wherePivot('tahun_ajaran', $tahun_ajaran)
+                ->wherePivot('unit_id', $unitId);
+        }])->get();
         $users = User::all();
 
         $data = [
@@ -46,7 +59,7 @@ class AdminUnitController extends Controller
     {
         $unitId = auth()->user()->adminUnit->unit_id;
         $siswaId = Siswa::where('unit_id', $unitId)->pluck('id');
-        
+
         $nilais = Nilai::whereIn('siswa_id', $siswaId)->get();
 
         $data = [

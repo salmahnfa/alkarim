@@ -8,6 +8,7 @@ use App\DataTables\NilaisDataTable;
 use App\Models\User;
 use App\Models\Ujian;
 use App\Models\GuruQuran;
+use App\Models\Kelas;
 use App\Models\KelompokHalaqah;
 use App\Models\Nilai;
 use App\Models\Siswa;
@@ -101,14 +102,17 @@ class AdminPusatController extends Controller
         $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
 
         $units = Unit::select('id', 'nama')->orderBy('nama')->get();
-
-        $nilais = Nilai::with('siswa.guruQuran')->get();
+        $ujians = Ujian::select('id', 'nama')->orderBy('nama')->get();
+        $gurus = GuruQuran::join('users', 'users.id', 'guru_qurans.user_id')->select('guru_qurans.id', 'guru_qurans.unit_id', 'users.nama')->orderBy('nama')->get();
+        $kelas = Kelas::select('id', 'unit_id', 'nama')->orderBy('unit_id')->orderBy('nama')->get();
 
         $data = [
-            'nilais' => $nilais,
             'title' => 'Rekap Nilai',
             'page_title' => 'Rekap Nilai',
             'units' => $units,
+            'ujians' => $ujians,
+            'gurus' => $gurus,
+            'kelas' => $kelas,
             'tahun_ajaran' => $tahun_ajaran
         ];
 

@@ -32,7 +32,8 @@
                                         <label class="col-lg-3 col-md-4 col-sm-4 text-md-right text-left mt-sm-2">Tahun
                                             Ajaran</label>
                                         <div class="col-lg-9 col-md-8 col-sm-8">
-                                            <select class="form-control pt-0 pb-0" id="select-tahun-ajaran">
+                                            <select class="form-control pt-0 pb-0" id="select-tahun-ajaran"
+                                                autocomplete="off">
                                                 @foreach (generateTahunAjaran() as $tahun)
                                                     <option value="{{ $tahun }}"
                                                         {{ $tahun_ajaran == $tahun ? 'selected' : '' }}>
@@ -45,7 +46,7 @@
                                         <label
                                             class="col-lg-3 col-md-4 col-sm-4 text-md-right text-left mt-sm-2">Unit</label>
                                         <div class="col-lg-9 col-md-8 col-sm-8">
-                                            <select class="form-control pt-0 pb-0" id="select-unit">
+                                            <select class="form-control pt-0 pb-0" id="select-unit" autocomplete="off">
                                                 <option value="">Semua</option>
                                                 @foreach ($units as $unit)
                                                     <option value="{{ $unit->id }}">{{ $unit->nama }} </option>
@@ -84,32 +85,39 @@
 @section('script')
     {{ $dataTable->scripts() }}
     <script>
+        let columnNames = {};
         $(document).ready(function() {
+            let columnDataTables = LaravelDataTables['{{ $dataTable->getTableId() }}'].settings().init().columns;
+
+            LaravelDataTables['{{ $dataTable->getTableId() }}'].columns().every(function(index) {
+                columnNames[columnDataTables[index].name] = index
+            });
+
             $(document).on('click', '#submitFilter', filterTable)
-            .on('click', '#resetFilter', resetFilter)
+                .on('click', '#resetFilter', resetFilter)
+        })
 
-            function filterTable() {
-                filterUnit = $('#select-unit').val();
-                LaravelDataTables['{{ $dataTable->getTableId() }}'].column(1).search(filterUnit);
+        function filterTable(dataTable) {
+            filterUnit = $('#select-unit').val();
+            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(columnNames['unit']).search(filterUnit);
 
-                filterTahunAjaran = $('#select-tahun-ajaran').val()
-                LaravelDataTables['{{ $dataTable->getTableId() }}'].column(5).search(filterTahunAjaran);
+            filterTahunAjaran = $('#select-tahun-ajaran').val()
+            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(columnNames['tahun_ajaran']).search(
+                filterTahunAjaran);
 
-                LaravelDataTables['{{ $dataTable->getTableId() }}'].draw();
+            LaravelDataTables['{{ $dataTable->getTableId() }}'].draw();
 
-                $('#span-tahun-ajaran').text(filterTahunAjaran)
-            }
+            $('#span-tahun-ajaran').text(filterTahunAjaran)
+        }
 
-            function resetFilter() {
-                $('#select-unit').val('');
-                $('#select-tahun-ajaran').val('{{ $tahun_ajaran }}')
-                $('#span-tahun-ajaran').text('{{ $tahun_ajaran }}')
+        function resetFilter() {
+            $('#select-unit').val('');
+            $('#select-tahun-ajaran').val('{{ $tahun_ajaran }}')
+            $('#span-tahun-ajaran').text('{{ $tahun_ajaran }}')
 
-                LaravelDataTables['{{ $dataTable->getTableId() }}']
-                .column(1).search('')
-                .column(5).search('')
+            LaravelDataTables['{{ $dataTable->getTableId() }}']
+                .columns().search('')
                 .draw();
-            }
-        });
+        }
     </script>
 @endsection

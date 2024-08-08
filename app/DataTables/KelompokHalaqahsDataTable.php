@@ -25,6 +25,10 @@ class KelompokHalaqahsDataTable extends DataTable
             ->addColumn('kelompok', function (KelompokHalaqah $data) {
                 return $data->kelas->nama . ' - ' . $data->grade;
             })
+            ->addColumn('pengampu', function (KelompokHalaqah $data) {
+                if (!isset($data->guruQuran)) return '-';
+                return $data->guruQuran->user->nama;
+            })
             ->addColumn('siswa', function (KelompokHalaqah $data) {
                 $siswas = "<table class='table table-bordered'>
                     <thead>
@@ -37,10 +41,10 @@ class KelompokHalaqahsDataTable extends DataTable
                     </thead>";
 
                 foreach ($data->siswas as $siswa) {
-                    $siswas .= "<tr class='bg-white'><td>" . $siswa->nisn . "</td>".
-                    "<td>" . $siswa->nama . '</td>'.
-                    "<td>" . $siswa->jilid->nama . '</td>'.
-                    "<td>" . $siswa->surah->nama. '</td></tr>';
+                    $siswas .= "<tr class='bg-white'><td>" . $siswa->nisn . "</td>" .
+                        "<td>" . $siswa->nama . '</td>' .
+                        "<td>" . $siswa->jilid->nama . '</td>' .
+                        "<td>" . $siswa->surah->nama . '</td></tr>';
                 }
 
                 $siswas .= "</tbody></table>";
@@ -52,8 +56,13 @@ class KelompokHalaqahsDataTable extends DataTable
             })
             ->addColumn('action', 'kelompokhalaqahs.action')
             ->rawColumns(['siswa', 'action'])
-            ->addIndexColumn();
-        // ->setRowId('id');
+            ->addIndexColumn()
+            ->filterColumn('tahun_ajaran', function ($query, $keyword) {
+                $query->where('tahun_ajaran', '=', $keyword);
+            })
+            ->filterColumn('unit', function ($query, $keyword) {
+                $query->where('unit_id', '=', $keyword);
+            });
     }
 
     /**
@@ -61,28 +70,23 @@ class KelompokHalaqahsDataTable extends DataTable
      */
     public function query(KelompokHalaqah $model): QueryBuilder
     {
+        $query = $model->newQuery();
+
         $tahun_ajaran = $this->tahun_ajaran;
-        if (isset($this->request->columns[5]['search']['value'])) {
-            $tahun_ajaran =  $this->request->columns[5]['search']['value'];
+        if (isset($this->request->columns[0]['search']['value'])) {
+            $tahun_ajaran =  $this->request->columns[0]['search']['value'];
+        } else {
+            //default filter tahun ajaran saat ini
+            $query->where('kelompok_halaqahs.tahun_ajaran', $tahun_ajaran);
         }
 
-        $query = $model->newQuery()->leftJoin('guru_qurans', 'kelompok_halaqahs.id', 'guru_qurans.id')
-            ->leftJoin('users', 'guru_qurans.user_id', 'users.id')
-            ->with([
-                'siswas' => function ($query) use ($tahun_ajaran) {
-                    $query->wherePivot('tahun_ajaran', $tahun_ajaran);
-                },
-                'kelas',
-                'unit'
-            ])
-            ->where('kelompok_halaqahs.tahun_ajaran', $tahun_ajaran)
-            ->select('kelompok_halaqahs.*', 'users.nama as pengampu')
+        $query->with([
+            'siswas' => function ($query) use ($tahun_ajaran) {
+                $query->wherePivot('tahun_ajaran', $tahun_ajaran);
+            },
+        ])
             ->orderBy('unit_id')
             ->orderBy('guru_quran_id', 'desc');
-
-        if (isset($this->request->columns[1]['search']['value'])) {
-            $query->where('kelompok_halaqahs.unit_id', '=', $this->request->columns[1]['search']['value']);
-        }
 
         return $query;
     }
@@ -105,12 +109,12 @@ class KelompokHalaqahsDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+            Column::make('tahun_ajaran')->hidden(),
             Column::make('DT_RowIndex')->title('#')->orderable(false),
             Column::make('unit'),
             Column::make('pengampu'),
             Column::make('kelompok'),
             Column::make('siswa')->orderable(false),
-            Column::make('tahun_ajaran')->hidden(),
         ];
     }
 

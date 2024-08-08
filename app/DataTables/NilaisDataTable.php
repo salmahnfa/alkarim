@@ -52,7 +52,22 @@ class NilaisDataTable extends DataTable
                 return $data->tanggal_ujian;
             })
             ->rawColumns(['status'])
-            ->addIndexColumn();
+            ->addIndexColumn()
+            ->filterColumn('tahun_ajaran', function ($query, $keyword) {
+                $query->where('tahun_ajaran', '=', ["{$keyword}"]);
+            })
+            ->filterColumn('unit', function ($query, $keyword) {
+                $query->where('unit_id', '=', $keyword);
+            })
+            ->filterColumn('tanggal_ujian', function ($query, $keyword) {
+                $filterDate = explode("-", $keyword);
+                if (!empty($filterDate[0])) {
+                    $query->where('tanggal_ujian', '>=', Carbon::parse($filterDate[0])->format("Y-m-d"));
+                }
+                if (!empty($filterDate[1])) {
+                    $query->where('tanggal_ujian', '<=', Carbon::parse($filterDate[1])->format("Y-m-d"));
+                }
+            });
     }
 
     /**
@@ -60,36 +75,17 @@ class NilaisDataTable extends DataTable
      */
     public function query(Nilai $model): QueryBuilder
     {
-        $tahun_ajaran = $this->tahun_ajaran;
-        if (isset($this->request->columns[9]['search']['value'])) {
-            $tahun_ajaran =  $this->request->columns[9]['search']['value'];
-        }
-
         $query = $model->newQuery()
-            ->with([
-                'siswa',
-                'ujian',
-                'guruQuran.user',
-                'unit',
-            ])
-            ->where('nilais.tahun_ajaran', $tahun_ajaran)
             ->orderBy('nilais.unit_id');
 
-        //filter unit
-        if (isset($this->request->columns[2]['search']['value'])) {
-            $query->where('nilais.unit_id', '=', $this->request->columns[2]['search']['value']);
+        $tahun_ajaran = $this->tahun_ajaran;
+
+        if (isset($this->request->columns[0]['search']['value'])) {
+            $tahun_ajaran =  $this->request->columns[0]['search']['value'];
+        } else {
+            //default filter tahun ajaran saat ini
+            $query->where('nilais.tahun_ajaran', $tahun_ajaran);
         }
-        //filter start date
-        if (isset($this->request->columns[1]['search']['value'])) {
-            // $query->where('nilais.tanggal_ujian', '>=', Carbon::parse($this->request->columns[1]['search']['value'])->format("Y-m-d"));
-        }
-        //filter unit
-        if (isset($this->request->columns[2]['search']['value'])) {
-            $query->where('nilais.unit_id', '=', $this->request->columns[2]['search']['value']);
-        }
-        // $query->filterColumn('tanggal_ujian', function($query, $keyword) {
-        //     $query->where('nilais.tanggal_ujian', '>=', Carbon::parse($keyword)->format("Y-m-d"));
-        // });
 
         return $query;
     }
@@ -112,6 +108,7 @@ class NilaisDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+            Column::make('tahun_ajaran')->hidden(),
             Column::make('DT_RowIndex')->title('#')->orderable(false),
             Column::make('tanggal_ujian'),
             Column::make('unit'),
@@ -121,8 +118,6 @@ class NilaisDataTable extends DataTable
             Column::make('penguji'),
             Column::make('nilai'),
             Column::make('status'),
-            Column::make('tahun_ajaran')->hidden(),
-            Column::make('tanggal_ujian_akhir')->hidden(),
         ];
     }
 

@@ -79,46 +79,6 @@ class AdminPusatController extends Controller
         return view('admin_pusat.users.guru_quran', $data);
     }
 
-    public function kelompok_halaqah(KelompokHalaqahsDataTable $dataTable)
-    {
-        $yearNow = Date::now()->year;
-        $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
-
-        $units = Unit::select('id', 'nama')->orderBy('nama')->get();
-
-        $data = [
-            'title' => 'Kelompok Halaqah',
-            'page_title' => 'Kelompok Halaqah',
-            'units' => $units,
-            'tahun_ajaran' => $tahun_ajaran
-        ];
-
-        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('contents.components.kelompok_halaqah', $data);
-    }
-
-    public function rekap_nilai(NilaisDataTable $dataTable)
-    {
-        $yearNow = Date::now()->year;
-        $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
-
-        $units = Unit::select('id', 'nama')->orderBy('nama')->get();
-        $ujians = Ujian::select('id', 'nama')->orderBy('nama')->get();
-        $gurus = GuruQuran::join('users', 'users.id', 'guru_qurans.user_id')->select('guru_qurans.id', 'guru_qurans.unit_id', 'users.nama')->orderBy('nama')->get();
-        $kelas = Kelas::select('id', 'unit_id', 'nama')->orderBy('unit_id')->orderBy('nama')->get();
-
-        $data = [
-            'title' => 'Rekap Nilai',
-            'page_title' => 'Rekap Nilai',
-            'units' => $units,
-            'ujians' => $ujians,
-            'gurus' => $gurus,
-            'kelas' => $kelas,
-            'tahun_ajaran' => $tahun_ajaran
-        ];
-
-        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('admin_pusat.rekap_nilai', $data);
-    }
-
     public function ujian()
     {
         $data = [

@@ -31,7 +31,7 @@
                                     <div class="form row">
                                         <div class="form-group col-md-4 col-12">
                                             <label>Tahun Ajaran</label>
-                                            <select class="form-control pt-0 pb-0" id="filtetSelectTahunAjaran">
+                                            <select class="form-control pt-0 pb-0" id="filterSelectTahunAjaran">
                                                 @foreach (generateTahunAjaran() as $tahun)
                                                     <option value="{{ $tahun }}"
                                                         {{ $tahun_ajaran == $tahun ? 'selected' : '' }}>
@@ -39,9 +39,10 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="form-group col-md-4 col-12">
+                                        <div
+                                            class="form-group col-md-4 col-12 {{ auth()->user()->role_id == 3 ? 'd-none' : '' }}">
                                             <label>Unit</label>
-                                            <select class="form-control" id="filtetSelectUnit" multiple="multiple">
+                                            <select class="form-control" id="filterSelectUnit" multiple="multiple">
                                                 @foreach ($units as $unit)
                                                     <option value="{{ $unit->id }}">{{ $unit->nama }} </option>
                                                 @endforeach
@@ -49,7 +50,7 @@
                                         </div>
                                         <div class="form-group col-md-4 col-12">
                                             <label>Kelas</label>
-                                            <select id="filtetSelectKelas" name="multiple[]" class="form-control"
+                                            <select id="filterSelectKelas" name="multiple[]" class="form-control"
                                                 multiple="multiple">
                                                 @foreach ($kelas as $dataKelas)
                                                     <option value="{{ $dataKelas->id }}">{{ $dataKelas->nama }} </option>
@@ -70,7 +71,7 @@
                                         </div>
                                         <div class="form-group col-md-4 col-12">
                                             <label>Penguji</label>
-                                            <select id="filtetSelectPenguji" name="multiple[]" class="form-control"
+                                            <select id="filterSelectPenguji" name="multiple[]" class="form-control"
                                                 multiple="multiple">
                                                 @foreach ($gurus as $guru)
                                                     <option value="{{ $guru->id }}">{{ $guru->nama }} </option>
@@ -81,6 +82,17 @@
                                             <label>Siswa</label>
                                             <input type="text" class="form-control" id="filterSiswa"
                                                 placeholder="Masukkan nama atau NISN siswa">
+                                        </div>
+                                        <div class="form-group col-md-4 col-12">
+                                            <label>Nilai</label>
+                                            <div class="input-group">
+                                                <input id="filterStartNilai" type="number"
+                                                    class="form-control input-number">
+                                                <span class="input-group-text">
+                                                    sampai
+                                                </span>
+                                                <input id="filterEndNilai" type="number" class="form-control input-number">
+                                            </div>
                                         </div>
                                         <div class="form-group col-md-4 col-12">
                                             <label>Tipe Ujian</label>
@@ -101,33 +113,22 @@
                                         <div class="form-group col-md-4 col-12">
                                             <label>Status</label>
                                             <div>
-                                                <div class="form-check form-check-inline ">
-                                                    <input name="filter_status[]" class="form-check-input mb-2"
-                                                        type="checkbox" value="1" id="checkboxStatusLulus"
-                                                        style="left: auto">
-                                                    <label class="form-check-label ml-3" for="checkboxStatusLulus">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="filter_status"
+                                                        id="checkboxStatusLulus" value="1">
+                                                    <label class="form-check-label ml-1 mt-sm-2 mr-1"
+                                                        for="checkboxStatusLulus">
                                                         Lulus
                                                     </label>
                                                 </div>
-                                                <div class="form-check form-check-inline ">
-                                                    <input name="filter_status[]" class="form-check-input mb-2"
-                                                        type="checkbox" value="0" id="checkboxStatusTidakLulus"
-                                                        style="left: auto">
-                                                    <label class="form-check-label ml-3" for="checkboxStatusTidakLulus">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="filter_status"
+                                                        id="checkboxStatusTidakLulus" value="0">
+                                                    <label class="form-check-label ml-1 mt-sm-2 mr-1"
+                                                        for="checkboxStatusTidakLulus">
                                                         Tidak Lulus
                                                     </label>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group col-md-4 col-12">
-                                            <label>Nilai</label>
-                                            <div class="input-group">
-                                                <input id="filterStartNilai" type="number"
-                                                    class="form-control input-number">
-                                                <span class="input-group-text">
-                                                    sampai
-                                                </span>
-                                                <input id="filterEndNilai" type="number" class="form-control input-number">
                                             </div>
                                         </div>
                                     </div>
@@ -149,7 +150,9 @@
                                 </h4>
                             </div>
                             <div class="card-body">
-                                {{ $dataTable->table(['class' => 'display table table-striped table-hover']) }}
+                                <div class="table-responsive">
+                                    {{ $dataTable->table(['class' => 'display table table-striped table-hover']) }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -162,6 +165,9 @@
 
 @section('script')
     {{ $dataTable->scripts() }}
+
+    @include('contents.script._datatable_script')
+
     <script>
         let columnNames = {};
         let dataFilter = [];
@@ -177,64 +183,64 @@
             initInputNumber()
 
             const dataGuru = {{ Illuminate\Support\Js::from($gurus) }};
-            initSelectFilterByUnit("filtetSelectPenguji", "Pilih Penguji", dataGuru)
+            initSelectFilterByUnit("filterSelectPenguji", "Pilih Penguji", dataGuru)
 
             const dataKelas = {{ Illuminate\Support\Js::from($kelas) }};
-            initSelectFilterByUnit("filtetSelectKelas", "Pilih Kelas", dataKelas)
+            initSelectFilterByUnit("filterSelectKelas", "Pilih Kelas", dataKelas)
 
             dataFilter = [{
                     type: 'string',
-                    element: '#filtetSelectTahunAjaran',
+                    element: '#filterSelectTahunAjaran',
                     elementEnd: '',
-                    columIndex: columnNames['tahun_ajaran'],
+                    columnIndex: columnNames['tahun_ajaran'],
                 },
                 {
                     type: 'array',
-                    element: '#filtetSelectUnit',
+                    element: '#filterSelectUnit',
                     elementEnd: '',
-                    columIndex: columnNames['unit'],
+                    columnIndex: columnNames['unit'],
                 },
                 // {
                 //     type: 'array',
-                //     element: '#filtetSelectKelas',
+                //     element: '#filterSelectKelas',
                 //     elementEnd: '',
-                //     columIndex: columnNames['kelas'],
+                //     columnIndex: columnNames['kelas'],
                 // },
                 {
                     type: 'range',
                     element: '#filterStartDate',
                     elementEnd: '#filterEndDate',
-                    columIndex: columnNames['tanggal_ujian'],
+                    columnIndex: columnNames['tanggal_ujian'],
                 },
                 {
                     type: 'array',
-                    element: '#filtetSelectPenguji',
+                    element: '#filterSelectPenguji',
                     elementEnd: '',
-                    columIndex: columnNames['penguji'],
+                    columnIndex: columnNames['penguji'],
                 },
                 {
                     type: 'string',
                     element: '#filterSiswa',
                     elementEnd: '',
-                    columIndex: columnNames['nama_siswa'],
+                    columnIndex: columnNames['nama_siswa'],
                 },
                 {
                     type: 'checkbox',
                     element: 'filter_ujian[]',
                     elementEnd: '',
-                    columIndex: columnNames['ujian'],
+                    columnIndex: columnNames['ujian'],
                 },
                 {
-                    type: 'checkbox',
+                    type: 'radio',
                     element: 'filter_status[]',
                     elementEnd: '',
-                    columIndex: columnNames['status'],
+                    columnIndex: columnNames['status'],
                 },
                 {
                     type: 'range',
                     element: '#filterStartNilai',
                     elementEnd: '#filterEndNilai',
-                    columIndex: columnNames['nilai'],
+                    columnIndex: columnNames['nilai'],
                 },
             ]
 
@@ -242,81 +248,8 @@
                 .on('click', '#resetFilter', resetFilter)
         })
 
-
-
         function submitFilter() {
             filterTable(dataFilter)
-        }
-
-
-        /*
-            param dataFilter is array of object that contain:
-            - type (string / array / range)
-            - element name of filter field (id / class / name)
-            - element name of filter field end, only when type is range (id / class / name)
-            - column index at datatable
-
-            param tahunAjaranFilterEl is element of filter tahun ajaran
-            param tahunAjaranEl is element that of display tahun ajaran
-        */
-
-        function filterTable(dataFilter, tahunAjaranFilterEl = "#filtetSelectTahunAjaran",
-            tahunAjaranEl = "#spanTahunAjaran") {
-            console.log(dataFilter)
-            $.each(dataFilter, function(key, filter) {
-                switch (filter.type) {
-                    case 'array':
-                        filterEl = $(filter.element);
-                        if (filterEl.val()) {
-                            filterValue = filterEl.val().toString();
-                            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(filter.columIndex)
-                                .search(filterValue);
-                        }
-                        break;
-                    case 'checkbox':
-                        filterEl = $('input[name="' + filter.element + '"]:checked');
-                        console.log(filterEl);
-                        filterValue = []
-                        if (filterEl) {
-                            filterEl.each(function() {
-                                filterValue.push(this.value)
-                            });
-                            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(filter.columIndex)
-                                .search(filterValue.toString());
-                        }
-                        break;
-                    case 'range':
-                        filterEl = $(filter.element);
-                        filterElEnd = $(filter.elementEnd);
-                        if (filterEl.val() && filterElEnd.val()) {
-                            filterStartValue = filterEl.val().toString();
-                            filterEndValue = filterElEnd.val().toString();
-                            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(filter.columIndex)
-                                .search(filterStartValue + "-" + filterEndValue);
-                        }
-                        break;
-                    default:
-                        filterEl = $(filter.element);
-                        if (filterEl.val()) {
-                            filterValue = filterEl.val();
-                            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(filter.columIndex)
-                                .search(filterValue);
-                        }
-                }
-            })
-
-            LaravelDataTables['{{ $dataTable->getTableId() }}'].draw();
-            $(tahunAjaranEl).text($(tahunAjaranFilterEl).val())
-        }
-
-        function resetFilter() {
-            $('#formFilter')[0].reset()
-            $('#filtetSelectTahunAjaran').val('{{ $tahun_ajaran }}')
-            $('#spanTahunAjaran').text('{{ $tahun_ajaran }}')
-
-            LaravelDataTables['{{ $dataTable->getTableId() }}']
-                .columns().search('')
-                .draw();
         }
 
         function initFilterDate() {
@@ -337,40 +270,6 @@
 
             filterEndDate.datepicker().on('changeDate', function(date) {
                 filterStartDate.datepicker('setEndDate', date.date);
-            })
-        }
-
-        function initFilterUnit() {
-            $('#filtetSelectUnit').select2({
-                theme: "bootstrap",
-                placeholder: "Pilih Unit",
-            });
-        }
-
-        function initSelectFilterByUnit(selectIdName, placeholder, dataList) {
-            const selectEl = $('#' + selectIdName)
-            const selectUnit = $('#filtetSelectUnit')
-
-            selectEl.select2({
-                theme: "bootstrap",
-                placeholder: placeholder,
-            });
-
-            selectUnit.on('change', function() {
-                const selectUnitEl = $(this)
-                selectEl.empty().trigger('change');
-
-                $.each(dataList, function(key, data) {
-                    if (
-                        selectUnitEl.val() == "" ||
-                        $.inArray(data.unit_id.toString(), selectUnitEl.val()) != -1
-                    ) {
-                        const newOption = new Option(data.nama, data.id, false, false);
-                        selectEl.append(newOption).trigger('change');
-                    }
-                });
-
-                selectEl.val(null).trigger('change')
             })
         }
 

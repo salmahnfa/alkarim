@@ -2,7 +2,9 @@
 
 namespace App\DataTables;
 
+use App\Models\AdminUnit;
 use App\Models\Nilai;
+use App\Models\Siswa;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
@@ -32,10 +34,14 @@ class NilaisDataTable extends DataTable
             ->addColumn('nisn_siswa', function (Nilai $data) {
                 return $data->siswa->nisn;
             })
+            ->addColumn('ujian', function (Nilai $data) {
+                return $data->ujian->nama;
+            })
             ->addColumn('penguji', function (Nilai $data) {
                 return $data->guruQuran->user->nama;
             })
             ->addColumn('unit', function (Nilai $data) {
+                if (!isset($data->unit)) return '-';
                 return $data->unit->nama;
             })
             ->addColumn('status', function (Nilai $data) {
@@ -57,7 +63,7 @@ class NilaisDataTable extends DataTable
                 $query->where('tahun_ajaran', '=', ["{$keyword}"]);
             })
             ->filterColumn('unit', function ($query, $keyword) {
-                $query->where('unit_id', '=', $keyword);
+                $query->whereIn('unit_id', explode(',', $keyword));
             })
             ->filterColumn('tanggal_ujian', function ($query, $keyword) {
                 $filterDate = explode("-", $keyword);
@@ -67,6 +73,35 @@ class NilaisDataTable extends DataTable
                 if (!empty($filterDate[1])) {
                     $query->where('tanggal_ujian', '<=', Carbon::parse($filterDate[1])->format("Y-m-d"));
                 }
+            })
+            ->filterColumn('penguji', function ($query, $keyword) {
+                $query->whereIn('guru_quran_id', explode(',', $keyword));
+            })
+            ->filterColumn('nama_siswa', function ($query, $keyword) {
+                $siswas = Siswa::whereRaw("lower(nama) like (?)", ["%{$keyword}%"])
+                    ->orWhereRaw("lower(nisn) like (?)", ["%{$keyword}%"])
+                    ->select('id')->get()->toArray();
+
+                $query->whereIn('siswa_id', $siswas);
+            })
+            ->filterColumn('ujian', function ($query, $keyword) {
+                $query->whereIn('ujian_id', explode(',', $keyword));
+            })
+            ->filterColumn('nilai', function ($query, $keyword) {
+                $filter = explode("-", $keyword);
+                if (!empty($filter[0])) {
+                    $query->where('nilai', '>=', $filter[0]);
+                }
+                if (!empty($filter[1])) {
+                    $query->where('nilai', '<=', $filter[1]);
+                }
+            })
+            ->filterColumn('status', function ($query, $keyword) {
+                $min = config('alkarim.min_nilai_ujian_lulus');
+
+                $keyword == 1 ?
+                    $query->where('nilai', '>=', $min) :
+                    $query->where('nilai', '<', $min);
             });
     }
 
@@ -85,6 +120,13 @@ class NilaisDataTable extends DataTable
         } else {
             //default filter tahun ajaran saat ini
             $query->where('nilais.tahun_ajaran', $tahun_ajaran);
+        }
+
+        if (auth()->user()->role_id == 3) {
+            $adminUnit = AdminUnit::where('user_id', auth()->user()->id)->first();
+            if ($adminUnit) {
+                $query->where('unit_id', $adminUnit->unit_id);
+            }
         }
 
         return $query;
@@ -111,9 +153,10 @@ class NilaisDataTable extends DataTable
             Column::make('tahun_ajaran')->hidden(),
             Column::make('DT_RowIndex')->title('#')->orderable(false),
             Column::make('tanggal_ujian'),
-            Column::make('unit'),
+            Column::make('unit')->hidden(auth()->user()->role_id == 3 ? true : false),
             Column::make('nisn_siswa')->title('NISN Siswa'),
             Column::make('nama_siswa'),
+            Column::make('ujian'),
             Column::make('deskripsi'),
             Column::make('penguji'),
             Column::make('nilai'),

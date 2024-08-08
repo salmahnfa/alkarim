@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\KelompokHalaqah;
+use App\Models\Siswa;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -58,10 +59,22 @@ class KelompokHalaqahsDataTable extends DataTable
             ->rawColumns(['siswa', 'action'])
             ->addIndexColumn()
             ->filterColumn('tahun_ajaran', function ($query, $keyword) {
-                $query->where('tahun_ajaran', '=', $keyword);
+                $query->where('tahun_ajaran', '=', ["{$keyword}"]);
             })
             ->filterColumn('unit', function ($query, $keyword) {
-                $query->where('unit_id', '=', $keyword);
+                $query->whereIn('unit_id', explode(',', $keyword));
+            })
+            ->filterColumn('kelas', function ($query, $keyword) {
+                $query->whereIn('kelas_id', explode(',', $keyword));
+            })
+            ->filterColumn('pengampu', function ($query, $keyword) {
+                $query->whereIn('guru_quran_id', explode(',', $keyword));
+            })
+            ->filterColumn('siswa', function ($query, $keyword) {
+                $query->whereHas('siswas', function ($q) use ($keyword) {
+                    $q->whereRaw("lower(nama) like (?)", ["%{$keyword}%"])
+                        ->orWhereRaw("lower(nisn) like (?)", ["%{$keyword}%"]);
+                });
             });
     }
 

@@ -14114,11 +14114,11 @@ div.table-responsive>div.dataTables_wrapper>div.row>div[class^=col-]:last-child 
   #chart-container {
     min-height:250px
   }
-  .form-check-inline {
-    display:flex;
+  /* .form-check-inline {
+    display:inline-flex;
     flex-direction:column;
-    align-items:left
-  }
+    align-items:center
+  } */
   #calendar .fc-toolbar {
     display:flex;
     flex-direction:column

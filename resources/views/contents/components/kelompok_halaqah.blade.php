@@ -23,17 +23,16 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
-                            <div class="card-header">
-                                <div class="card-title">Cari Kelompok Halaqah</div>
-                            </div>
-                            <div class="card-body">
-                                <div class="form row px-0">
-                                    <div class="form-group form-show-validation row col-lg-6 col-md-6 col-12">
-                                        <label class="col-lg-3 col-md-4 col-sm-4 text-md-right text-left mt-sm-2">Tahun
-                                            Ajaran</label>
-                                        <div class="col-lg-9 col-md-8 col-sm-8">
-                                            <select class="form-control pt-0 pb-0" id="select-tahun-ajaran"
-                                                autocomplete="off">
+                            <form id="formFilter">
+                                <div class="card-header">
+                                    <div class="card-title">Cari Kelompok Halaqah</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form row">
+                                        <div class="form-group col-md-4 col-12">
+                                            <label>Tahun Ajaran</label>
+                                            <select class="form-control pt-0 pb-0" id="filterSelectTahunAjaran"
+                                                autocomplete="false">
                                                 @foreach (generateTahunAjaran() as $tahun)
                                                     <option value="{{ $tahun }}"
                                                         {{ $tahun_ajaran == $tahun ? 'selected' : '' }}>
@@ -41,25 +40,44 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
-                                    <div class="form-group form-show-validation row col-lg-6 col-md-6 col-12">
-                                        <label
-                                            class="col-lg-3 col-md-4 col-sm-4 text-md-right text-left mt-sm-2">Unit</label>
-                                        <div class="col-lg-9 col-md-8 col-sm-8">
-                                            <select class="form-control pt-0 pb-0" id="select-unit" autocomplete="off">
-                                                <option value="">Semua</option>
+                                        <div class="form-group col-md-4 col-12">
+                                            <label>Unit</label>
+                                            <select class="form-control" id="filterSelectUnit" multiple="multiple">
                                                 @foreach ($units as $unit)
                                                     <option value="{{ $unit->id }}">{{ $unit->nama }} </option>
                                                 @endforeach
                                             </select>
                                         </div>
+                                        <div class="form-group col-md-4 col-12">
+                                            <label>Kelas</label>
+                                            <select id="filterSelectKelas" name="multiple[]" class="form-control"
+                                                multiple="multiple">
+                                                @foreach ($kelas as $dataKelas)
+                                                    <option value="{{ $dataKelas->id }}">{{ $dataKelas->nama }} </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4 col-12">
+                                            <label>Pengampu</label>
+                                            <select id="filterSelectPengampu" name="multiple[]" class="form-control"
+                                                multiple="multiple">
+                                                @foreach ($gurus as $guru)
+                                                    <option value="{{ $guru->id }}">{{ $guru->nama }} </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-4 col-12">
+                                            <label>Siswa</label>
+                                            <input type="text" class="form-control" id="filterSiswa"
+                                                placeholder="Masukkan nama atau NISN siswa">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-action">
-                                <button id="submitFilter" class="btn btn-success">Tampilkan</button>
-                                <button id="resetFilter" class="btn btn-danger">Reset</button>
-                            </div>
+                                <div class="card-action">
+                                    <a id="submitFilter" class="btn btn-success text-white">Tampilkan</a>
+                                    <a id="resetFilter" class="btn btn-danger text-white">Reset</a>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -72,7 +90,9 @@
                                 </h4>
                             </div>
                             <div class="card-body">
-                                {{ $dataTable->table(['class' => 'display table table-striped table-hover']) }}
+                                <div class="table-responsive">
+                                    {{ $dataTable->table(['class' => 'display table table-striped table-hover']) }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -84,8 +104,13 @@
 
 @section('script')
     {{ $dataTable->scripts() }}
+
+    @include('contents.script._datatable_script')
+
     <script>
         let columnNames = {};
+        let dataFilter = [];
+
         $(document).ready(function() {
             let columnDataTables = LaravelDataTables['{{ $dataTable->getTableId() }}'].settings().init().columns;
 
@@ -93,31 +118,52 @@
                 columnNames[columnDataTables[index].name] = index
             });
 
-            $(document).on('click', '#submitFilter', filterTable)
+            initFilterUnit()
+
+            const dataGuru = {{ Illuminate\Support\Js::from($gurus) }};
+            initSelectFilterByUnit("filterSelectPengampu", "Pilih Pengampu", dataGuru)
+
+            const dataKelas = {{ Illuminate\Support\Js::from($kelas) }};
+            initSelectFilterByUnit("filterSelectKelas", "Pilih Kelas", dataKelas)
+
+            dataFilter = [{
+                    type: 'string',
+                    element: '#filterSelectTahunAjaran',
+                    elementEnd: '',
+                    columnIndex: columnNames['tahun_ajaran'],
+                },
+                {
+                    type: 'array',
+                    element: '#filterSelectUnit',
+                    elementEnd: '',
+                    columnIndex: columnNames['unit'],
+                },
+                {
+                    type: 'array',
+                    element: '#filterSelectKelas',
+                    elementEnd: '',
+                    columnIndex: columnNames['kelas'],
+                },
+                {
+                    type: 'array',
+                    element: '#filterSelectPengampu',
+                    elementEnd: '',
+                    columnIndex: columnNames['pengampu'],
+                },
+                {
+                    type: 'string',
+                    element: '#filterSiswa',
+                    elementEnd: '',
+                    columnIndex: columnNames['siswa'],
+                },
+            ]
+
+            $(document).on('click', '#submitFilter', submitFilter)
                 .on('click', '#resetFilter', resetFilter)
         })
 
-        function filterTable(dataTable) {
-            filterUnit = $('#select-unit').val();
-            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(columnNames['unit']).search(filterUnit);
-
-            filterTahunAjaran = $('#select-tahun-ajaran').val()
-            LaravelDataTables['{{ $dataTable->getTableId() }}'].column(columnNames['tahun_ajaran']).search(
-                filterTahunAjaran);
-
-            LaravelDataTables['{{ $dataTable->getTableId() }}'].draw();
-
-            $('#span-tahun-ajaran').text(filterTahunAjaran)
-        }
-
-        function resetFilter() {
-            $('#select-unit').val('');
-            $('#select-tahun-ajaran').val('{{ $tahun_ajaran }}')
-            $('#span-tahun-ajaran').text('{{ $tahun_ajaran }}')
-
-            LaravelDataTables['{{ $dataTable->getTableId() }}']
-                .columns().search('')
-                .draw();
+        function submitFilter() {
+            filterTable(dataFilter)
         }
     </script>
 @endsection

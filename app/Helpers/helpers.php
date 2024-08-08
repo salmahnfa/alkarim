@@ -15,8 +15,8 @@ if (!function_exists('generateTahunAjaran')) {
         $end = Date::now()->year;
         $tahunAjaran = [];
 
-        for ($i = $start; $i <= $end; $i++) {
-            $tahunAjaran[] = $i . '/' . $i + 1;
+        for ($i = $end + 1; $i >= $start; $i--) {
+            $tahunAjaran[] = $i - 1  . '/' . $i;
         }
 
         return $tahunAjaran;

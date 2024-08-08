@@ -21,26 +21,38 @@ class AdminUnitController extends Controller
         return view('admin_unit.dashboard', $data);
     }
 
-    public function kelompok_halaqah(?string $tahun_ajaran_start = null, ?string $tahun_ajaran_end = null)
+    public function daftarSiswa()
     {
-        if (!$tahun_ajaran_start) {
-            $yearNow = Date::now()->year;
-            $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
-        } else {
-            $tahun_ajaran = "$tahun_ajaran_start/$tahun_ajaran_end";
-        }
+        $adminUnit = auth()->user()->adminUnit;
+        $unitId = $adminUnit->unit_id;
+
+        $siswas = Siswa::whereHas('kelas', function ($query) use ($unitId) {
+            $query->where('kelas.unit_id', $unitId);
+        })->get();
+
+        $data = [
+            'siswas' => $siswas,
+            'title' => 'Siswa',
+            'page_title' => 'Siswa'
+        ];
+
+        return view('admin_unit.daftar_siswa', $data);
+    }
+
+    public function kelompok_halaqah()
+    {
+        $yearNow = Date::now()->year;
+        $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
 
         $adminUnit = auth()->user()->adminUnit;
         $unitId = $adminUnit->unit_id;
 
         $kelompokHalaqahs = KelompokHalaqah::where('unit_id', $unitId)->get();
         $guruQurans = GuruQuran::where('unit_id', $unitId)->get();
-        $siswas = Siswa::
-
-        with(['kelas' => function ($query) use ($tahun_ajaran, $unitId) {
-            $query->wherePivot('tahun_ajaran', $tahun_ajaran)
-                ->wherePivot('unit_id', $unitId);
-        }])->get();
+        $siswas = Siswa::with(['kelas' => function ($query) use ($tahun_ajaran, $unitId) {
+                $query->wherePivot('tahun_ajaran', $tahun_ajaran)
+                    ->wherePivot('unit_id', $unitId);
+            }])->get();
         $users = User::all();
 
         $data = [

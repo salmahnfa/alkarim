@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('nilais', function (Blueprint $table) {
-            $table->foreignId('unit_id')->nullable();
-            $table->foreign('unit_id')->references('id')->on('units');
+            $table->foreignId('siswa_kelas_id')->nullable();
+            $table->foreign('siswa_kelas_id')->references('id')->on('siswa_kelas');
+
+            $table->dropForeign('nilais_siswa_id_foreign');
+            $table->dropColumn('siswa_id');
         });
     }
 
@@ -23,8 +26,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('nilais', function (Blueprint $table) {
-            $table->dropForeign('nilais_unit_id_foreign');
-            $table->dropColumn('unit_id');
+            $table->dropForeign('nilais_siswa_kelas_id_foreign');
+            $table->dropColumn('siswa_kelas_id');
+
+            $table->foreignId('siswa_id')->nullable();
+            $table->foreign('siswa_id')->references('id')->on('siswas');
         });
     }
 };

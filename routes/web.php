@@ -48,6 +48,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [GuruQuranController::class, 'dashboard'])->name('guru_quran.dashboard');
         Route::get('/kelompok-halaqah', [GuruQuranController::class, 'kelompok_halaqah'])->name('guru_quran.kelompok_halaqah');
         Route::get('/mutabaah', [GuruQuranController::class, 'mutabaah'])->name('guru_quran.mutabaah');
-        Route::get('/nilai', [GuruQuranController::class, 'nilai'])->name('guru_quran.nilai');
+        Route::get('/nilai', [RekapNilaiController::class, 'rekap_nilai'])->name('guru_quran.nilai');
     });
 });

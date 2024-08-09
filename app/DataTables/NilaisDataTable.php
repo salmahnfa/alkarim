@@ -3,9 +3,14 @@
 namespace App\DataTables;
 
 use App\Models\AdminUnit;
+use App\Models\GuruQuran;
+use App\Models\Kelas;
+use App\Models\KelompokHalaqah;
 use App\Models\Nilai;
 use App\Models\Siswa;
+use App\Models\SiswaKelas;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -29,15 +34,21 @@ class NilaisDataTable extends DataTable
                 return Carbon::parse($data->tanggal_ujian)->format('d M Y');
             })
             ->addColumn('nama_siswa', function (Nilai $data) {
-                return $data->siswa->nama;
+                return $data->siswaKelas->siswa->nama;
             })
             ->addColumn('nisn_siswa', function (Nilai $data) {
-                return $data->siswa->nisn;
+                return $data->siswaKelas->siswa->nisn;
+            })
+            ->addColumn('kelas', function (Nilai $data) {
+                return $data->siswaKelas->kelas->nama;
+            })
+            ->addColumn('grade', function (Nilai $data) {
+                return $data->siswaKelas->grade;
             })
             ->addColumn('ujian', function (Nilai $data) {
                 return $data->ujian->nama;
             })
-            ->addColumn('penguji', function (Nilai $data) {
+            ->addColumn('penyimak', function (Nilai $data) {
                 return $data->guruQuran->user->nama;
             })
             ->addColumn('unit', function (Nilai $data) {
@@ -74,7 +85,7 @@ class NilaisDataTable extends DataTable
                     $query->where('tanggal_ujian', '<=', Carbon::parse($filterDate[1])->format("Y-m-d"));
                 }
             })
-            ->filterColumn('penguji', function ($query, $keyword) {
+            ->filterColumn('penyimak', function ($query, $keyword) {
                 $query->whereIn('guru_quran_id', explode(',', $keyword));
             })
             ->filterColumn('nama_siswa', function ($query, $keyword) {
@@ -83,6 +94,19 @@ class NilaisDataTable extends DataTable
                     ->select('id')->get()->toArray();
 
                 $query->whereIn('siswa_id', $siswas);
+            })
+            ->filterColumn('kelas', function ($query, $keyword) {
+                $tahun_ajaran = $this->tahun_ajaran;
+
+                if (isset($this->request->columns[0]['search']['value'])) {
+                    $tahun_ajaran =  $this->request->columns[0]['search']['value'];
+                }
+
+                $siswaKelas = SiswaKelas::whereIn('kelas_id', explode(',', $keyword))
+                    ->where('tahun_ajaran', '=', $tahun_ajaran)
+                    ->select('id')->get()->toArray();
+
+                $query->whereIn('siswa_kelas_id', $siswaKelas);
             })
             ->filterColumn('ujian', function ($query, $keyword) {
                 $query->whereIn('ujian_id', explode(',', $keyword));
@@ -111,7 +135,9 @@ class NilaisDataTable extends DataTable
     public function query(Nilai $model): QueryBuilder
     {
         $query = $model->newQuery()
+            ->with(['unit', 'ujian', 'guruQuran.user', 'siswaKelas.siswa', 'siswaKelas.kelas'])
             ->orderBy('nilais.unit_id');
+
 
         $tahun_ajaran = $this->tahun_ajaran;
 
@@ -127,6 +153,35 @@ class NilaisDataTable extends DataTable
             if ($adminUnit) {
                 $query->where('unit_id', $adminUnit->unit_id);
             }
+        }
+
+        switch (auth()->user()->role_id) {
+            case 3:
+                $adminUnit = AdminUnit::where('user_id', auth()->user()->id)->first();
+                if ($adminUnit) {
+                    $query->where('unit_id', $adminUnit->unit_id);
+                }
+                break;
+
+            case 4:
+                $guruQuran = GuruQuran::where('user_id', auth()->user()->id)->first();
+                if ($guruQuran) {
+                    $query->where('unit_id', $guruQuran->unit_id);
+
+                    //filter siswa yg ada di kelompok halaqah guru yg sedang login
+                    $halaqahId = KelompokHalaqah::where('tahun_ajaran', $tahun_ajaran)
+                        ->where('guru_quran_id', $guruQuran->id)
+                        ->select('id')
+                        ->get()->toArray();
+
+                    $siswaKelasId = SiswaKelas::whereIn('kelompok_halaqah_id', $halaqahId)
+                        ->select('id')
+                        ->get()->toArray();
+
+                    $query->whereIn('siswa_kelas_id', $siswaKelasId);
+                }
+
+                break;
         }
 
         return $query;
@@ -153,12 +208,14 @@ class NilaisDataTable extends DataTable
             Column::make('tahun_ajaran')->hidden(),
             Column::make('DT_RowIndex')->title('#')->orderable(false),
             Column::make('tanggal_ujian'),
-            Column::make('unit')->hidden(auth()->user()->role_id == 3 ? true : false),
+            in_array(auth()->user()->role_id, [3, 4]) ? Column::make('unit')->hidden() : Column::make('unit'),
             Column::make('nisn_siswa')->title('NISN Siswa'),
             Column::make('nama_siswa'),
+            Column::make('kelas'),
+            Column::make('grade'),
             Column::make('ujian'),
             Column::make('deskripsi'),
-            Column::make('penguji'),
+            Column::make('penyimak'),
             Column::make('nilai'),
             Column::make('status'),
         ];

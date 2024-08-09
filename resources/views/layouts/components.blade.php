@@ -58,14 +58,14 @@
             </ul>
         </div>
     </li>
-    <li class="nav-item {{ Request::is('admin_pusat/ujian') ? 'active' : '' }}">
+    <li class="nav-item {{ Request::is($role . '/ujian') ? 'active' : '' }}">
         <a href="{{ route($role . '.ujian') }}">
             <i class="fas fa-pen"></i>
             <p>Ujian</p>
         </a>
     </li>
 @endif
-<li class="nav-item {{ Request::is('admin_pusat/kelompok-halaqah') ? 'active' : '' }}">
+<li class="nav-item {{ Request::is($role .'/kelompok-halaqah') ? 'active' : '' }}">
     <a href="{{ route($role . '.kelompok_halaqah') }}">
         <i class="fas fa-clipboard"></i>
         <p>Kelompok Halaqah</p>
@@ -94,7 +94,7 @@
         <div class="collapse" id="base">
             <ul class="nav nav-collapse">
                 <li>
-                    <a href="{{ route($role . '.nilais.tahsin') }}">
+                    <a href="">
                         <span class="sub-item">Tambah Baru</span>
                     </a>
                 </li>

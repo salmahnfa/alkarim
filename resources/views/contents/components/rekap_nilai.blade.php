@@ -40,7 +40,7 @@
                                             </select>
                                         </div>
                                         <div
-                                            class="form-group col-md-4 col-12 {{ auth()->user()->role_id == 3 ? 'd-none' : '' }}">
+                                            class="form-group col-md-4 col-12 {{ in_array(auth()->user()->role_id, [3, 4]) ? 'd-none' : '' }}">
                                             <label>Unit</label>
                                             <select class="form-control" id="filterSelectUnit" multiple="multiple">
                                                 @foreach ($units as $unit)
@@ -53,7 +53,7 @@
                                             <select id="filterSelectKelas" name="multiple[]" class="form-control"
                                                 multiple="multiple">
                                                 @foreach ($kelas as $dataKelas)
-                                                    <option value="{{ $dataKelas->id }}">{{ $dataKelas->nama }} </option>
+                                                    <option value="{{ $dataKelas->id }}">{{ $dataKelas->nama }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -70,8 +70,8 @@
                                             </div>
                                         </div>
                                         <div class="form-group col-md-4 col-12">
-                                            <label>Penguji</label>
-                                            <select id="filterSelectPenguji" name="multiple[]" class="form-control"
+                                            <label>Penyimak</label>
+                                            <select id="filterSelectPenyimak" name="multiple[]" class="form-control"
                                                 multiple="multiple">
                                                 @foreach ($gurus as $guru)
                                                     <option value="{{ $guru->id }}">{{ $guru->nama }} </option>
@@ -183,7 +183,7 @@
             initInputNumber()
 
             const dataGuru = {{ Illuminate\Support\Js::from($gurus) }};
-            initSelectFilterByUnit("filterSelectPenguji", "Pilih Penguji", dataGuru)
+            initSelectFilterByUnit("filterSelectPenyimak", "Pilih Penyimak", dataGuru)
 
             const dataKelas = {{ Illuminate\Support\Js::from($kelas) }};
             initSelectFilterByUnit("filterSelectKelas", "Pilih Kelas", dataKelas)
@@ -200,12 +200,12 @@
                     elementEnd: '',
                     columnIndex: columnNames['unit'],
                 },
-                // {
-                //     type: 'array',
-                //     element: '#filterSelectKelas',
-                //     elementEnd: '',
-                //     columnIndex: columnNames['kelas'],
-                // },
+                {
+                    type: 'array',
+                    element: '#filterSelectKelas',
+                    elementEnd: '',
+                    columnIndex: columnNames['kelas'],
+                },
                 {
                     type: 'range',
                     element: '#filterStartDate',
@@ -214,9 +214,9 @@
                 },
                 {
                     type: 'array',
-                    element: '#filterSelectPenguji',
+                    element: '#filterSelectPenyimak',
                     elementEnd: '',
-                    columnIndex: columnNames['penguji'],
+                    columnIndex: columnNames['penyimak'],
                 },
                 {
                     type: 'string',

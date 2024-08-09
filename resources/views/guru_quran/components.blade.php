@@ -3,7 +3,7 @@
                                     <i class="fas fa-home"></i>
                                     <p>Dashboard</p>
                                 </a>
-                            </li>  
+                            </li>
                             <li class="nav-item {{ Request::is('guru_quran/kelompok_halaqah')? 'active' : '' }}">
                                 <a href="{{ route('guru_quran.kelompok_halaqah') }}">
                                     <i class="fas fa-user"></i>
@@ -25,7 +25,7 @@
                                 <div class="collapse" id="base">
                                     <ul class="nav nav-collapse">
                                         <li>
-                                            <a href="{{ route('guru_quran.nilais.tahsin') }}">
+                                            <a href="{{ route('') }}">
                                                 <span class="sub-item">Tambah Baru</span>
                                             </a>
                                         </li>
@@ -37,4 +37,3 @@
                                     </ul>
                                 </div>
                             </li>
-                            

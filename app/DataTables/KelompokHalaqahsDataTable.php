@@ -94,9 +94,14 @@ class KelompokHalaqahsDataTable extends DataTable
         }
 
         $query->with([
+            'unit',
+            'guruQuran.user',
+            'kelas',
             'siswas' => function ($query) use ($tahun_ajaran) {
                 $query->wherePivot('tahun_ajaran', $tahun_ajaran);
             },
+            'siswas.jilid',
+            'siswas.surah',
         ])
             ->orderBy('unit_id')
             ->orderBy('guru_quran_id', 'desc');

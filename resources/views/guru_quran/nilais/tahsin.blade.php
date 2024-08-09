@@ -46,7 +46,7 @@
 												<div class="modal-header no-bd">
 													<h5 class="modal-title">
 														<span class="fw-mediumbold">
-														New</span> 
+														New</span>
 														<span class="fw-light">
 															Row
 														</span>
@@ -94,7 +94,7 @@
 													<th>Tanggal Ujian</th>
 													<th>Nama Siswa</th>
 													<th>Deskripsi</th>
-													<th>Penguji</th>
+													<th>Penyimak</th>
 													<th>Nilai</th>
 													<th>Status</th>
 													<th style="width: 10%">Action</th>
@@ -121,7 +121,7 @@
 																	<i class="fa fa-edit"></i>
 																</a>
 																<form action="" method="POST" class="d-inline">
-																	@csrf	
+																	@csrf
 																	@method('delete')
 																	<button class="btn btn-link btn-danger" data-toggle="tooltip" onclick="return confirm('Ingin menghapus admin ini?')" data-original-title="Hapus" type="submit">
 																		<i class="fa fa-times"></i>

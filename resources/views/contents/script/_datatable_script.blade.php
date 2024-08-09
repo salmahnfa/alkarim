@@ -21,9 +21,9 @@
             },
             {
                 type: 'array',
-                element: '#filterSelectPenguji',
+                element: '#filterSelectPenyimak',
                 elementEnd: '',
-                columnIndex: columnNames['penguji'],
+                columnIndex: columnNames['penyimak'],
             },
             {
                 type: 'string',

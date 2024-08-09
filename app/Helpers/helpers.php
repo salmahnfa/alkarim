@@ -11,12 +11,12 @@ use Illuminate\Support\Facades\Date;
 if (!function_exists('generateTahunAjaran')) {
     function generateTahunAjaran()
     {
-        $start = config('app.tahun_ajaran_start');
+        $start = config('alkarim.tahun_ajaran_start');
         $end = Date::now()->year;
         $tahunAjaran = [];
 
-        for ($i = $start; $i <= $end; $i++) {
-            $tahunAjaran[] = $i . '/' . $i + 1;
+        for ($i = $end + 1; $i >= $start; $i--) {
+            $tahunAjaran[] = $i - 1  . '/' . $i;
         }
 
         return $tahunAjaran;

@@ -39,7 +39,7 @@ class GuruQuranController extends Controller
     public function mutabaah()
     {
         $guruQuran = auth()->user()->guruQuran;
-        
+
         $kelompokHalaqahs = $guruQuran->kelompokHalaqahs()->get();
         $mutabaahs = Mutabaah::whereIn('siswa_id', Siswa::whereIn('kelompok_halaqah_id', $kelompokHalaqahs->pluck('id'))->pluck('id'))->get();
 
@@ -51,26 +51,6 @@ class GuruQuranController extends Controller
         ];
 
         return view('guru_quran.mutabaah', $data);
-    }
-
-    public function nilai()
-    {
-        $guruQuran = auth()->user()->guruQuran;
-        
-        $kelompokHalaqahs = $guruQuran->kelompokHalaqahs()->get();
-        $nilais = Nilai::whereIn('siswa_id', Siswa::whereIn('kelompok_halaqah_id', $kelompokHalaqahs->pluck('id'))->pluck('id'))->get();
-        
-        $ujians = Ujian::all();
-
-        $data = [
-            'kelompokHalaqahs' => $kelompokHalaqahs,
-            'nilais' => $nilais,
-            'ujians' => $ujians,
-            'title' => 'Kelompok Halaqah',
-            'page_title' => 'Kelompok Halaqah'
-        ];
-
-        return view('guru_quran.nilai', $data);
     }
 
     public function tahsin()

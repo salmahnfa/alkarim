@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminPusatController;
 use App\Http\Controllers\PPQController;
 use App\Http\Controllers\AdminUnitController;
 use App\Http\Controllers\GuruQuranController;
+use App\Http\Controllers\KelompokHalaqahController;
+use App\Http\Controllers\RekapNilaiController;
 
 Route::get('/', function () {
     return view('login');
@@ -18,8 +20,8 @@ Route::get('/welcome', [LoginController::class, 'index'])->name('welcome');
 Route::middleware(['auth'])->group(function () {
     Route::group(['prefix' => 'admin-pusat', 'checkRole:admin-pusat'], function () {
         Route::get('/dashboard', [AdminPusatController::class, 'dashboard'])->name('admin_pusat.dashboard');
-        Route::get('/kelompok-halaqah/{tahun_ajaran_start?}/{tahun_ajaran_end?}', [AdminPusatController::class, 'kelompok_halaqah'])->name('admin_pusat.kelompok_halaqah');
-        Route::get('/rekap-nilai', [AdminPusatController::class, 'rekap_nilai'])->name('admin_pusat.rekap_nilai');
+        Route::get('/kelompok-halaqah', [KelompokHalaqahController::class, 'kelompok_halaqah'])->name('admin_pusat.kelompok_halaqah');
+        Route::get('/rekap-nilai', [RekapNilaiController::class, 'rekap_nilai'])->name('admin_pusat.rekap_nilai');
         Route::get('/ujian', [AdminPusatController::class, 'ujian'])->name('admin_pusat.ujian');
         Route::prefix('users')->group(function () {
             Route::get('/admin-pusat', [AdminPusatController::class, 'admin_pusat'])->name('admin_pusat.users.admin_pusat');
@@ -31,21 +33,21 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['prefix' => 'ppq', 'checkRole:ppq'], function () {
         Route::get('/dashboard', [PPQController::class, 'dashboard'])->name('ppq.dashboard');
-        Route::get('/kelompok-halaqah', [PPQController::class, 'kelompok_halaqah'])->name('ppq.kelompok_halaqah');
-        Route::get('/rekap-nilai', [PPQController::class, 'rekap_nilai'])->name('ppq.rekap_nilai');
+        Route::get('/kelompok-halaqah', [KelompokHalaqahController::class, 'kelompok_halaqah'])->name('ppq.kelompok_halaqah');
+        Route::get('/rekap-nilai', [RekapNilaiController::class, 'rekap_nilai'])->name('ppq.rekap_nilai');
     });
 
     Route::group(['prefix' => 'admin-unit', 'checkRole:admin-unit'], function () {
         Route::get('/dashboard', [AdminUnitController::class, 'dashboard'])->name('admin_unit.dashboard');
         Route::get('/daftar-siswa', [AdminUnitController::class, 'daftarSiswa'])->name('admin_unit.daftar_siswa');
         Route::get('/kelompok-halaqah', [AdminUnitController::class, 'kelompok_halaqah'])->name('admin_unit.kelompok_halaqah');
-        Route::get('/rekap-nilai', [AdminUnitController::class, 'rekap_nilai'])->name('admin_unit.rekap_nilai');
+        Route::get('/rekap-nilai', [RekapNilaiController::class, 'rekap_nilai'])->name('admin_unit.rekap_nilai');
     });
 
     Route::group(['prefix' => 'guru-quran', 'checkRole:guru-quran'], function () {
         Route::get('/dashboard', [GuruQuranController::class, 'dashboard'])->name('guru_quran.dashboard');
         Route::get('/kelompok-halaqah', [GuruQuranController::class, 'kelompok_halaqah'])->name('guru_quran.kelompok_halaqah');
         Route::get('/mutabaah', [GuruQuranController::class, 'mutabaah'])->name('guru_quran.mutabaah');
-        Route::get('/nilai', [GuruQuranController::class, 'nilai'])->name('guru_quran.nilai');
+        Route::get('/nilai', [RekapNilaiController::class, 'rekap_nilai'])->name('guru_quran.nilai');
     });
 });

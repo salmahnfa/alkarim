@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Nilai extends Model
 {
@@ -17,11 +18,12 @@ class Nilai extends Model
         'nilai',
         'tanggal_ujian',
         'tahun_ajaran',
+        'unit_id',
     ];
 
-    public function siswa()
+    public function siswaKelas(): BelongsTo
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(SiswaKelas::class);
     }
 
     public function ujian()
@@ -32,5 +34,10 @@ class Nilai extends Model
     public function guruQuran()
     {
         return $this->belongsTo(GuruQuran::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
 }

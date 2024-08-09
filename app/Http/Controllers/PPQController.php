@@ -35,7 +35,7 @@ class PPQController extends Controller
             'tahun_ajaran' => $tahun_ajaran
         ];
 
-        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('content.kelompok_halaqah', $data);
+        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('contents.components.kelompok_halaqah', $data);
     }
 
     public function rekap_nilai()

@@ -21,9 +21,8 @@
         <!-- CSS Files -->
         <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
         <link rel="stylesheet" href="/assets/css/azzara.min.css">
+        <link rel="stylesheet" href="/assets/css/bootstrap-datepicker/bootstrap-datepicker.min.css">
 
-        <!-- CSS Just for demo purpose, don't include it in your project -->
-        {{-- <link rel="stylesheet" href="/assets/css/demo.css"> --}}
     </head>
     <body>
         <div class="wrapper">
@@ -201,12 +200,11 @@
     <!-- Bootstrap Toggle -->
     <script src="/assets/js/plugin/bootstrap-toggle/bootstrap-toggle.min.js"></script>
 
-    <!-- jQuery Vector Maps -->
-    <script src="/assets/js/plugin/jqvmap/jquery.vmap.min.js"></script>
-    <script src="/assets/js/plugin/jqvmap/maps/jquery.vmap.world.js"></script>
+    <!-- Bootstrap Datepicker -->
+    <script src="/assets/js/plugin/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
 
-    <!-- Google Maps Plugin -->
-    <script src="/assets/js/plugin/gmaps/gmaps.js"></script>
+    <!-- Select2 -->
+    <script src="/assets/js/plugin/select2-4.0.13/select2.full.min.js"></script>
 
     <!-- Sweet Alert -->
     <script src="/assets/js/plugin/sweetalert/sweetalert.min.js"></script>

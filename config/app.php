@@ -122,7 +122,4 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
-
-    'tahun_ajaran_start' => env('TAHUN_AJARAN_START', '2024')
-
 ];

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\DataTables\KelompokHalaqahsDataTable;
+use App\DataTables\NilaisDataTable;
 use App\Models\User;
 use App\Models\Ujian;
 use App\Models\GuruQuran;
+use App\Models\Kelas;
 use App\Models\KelompokHalaqah;
 use App\Models\Nilai;
 use App\Models\Siswa;
@@ -75,36 +77,6 @@ class AdminPusatController extends Controller
         ];
 
         return view('admin_pusat.users.guru_quran', $data);
-    }
-
-    public function kelompok_halaqah(Request $request, KelompokHalaqahsDataTable $dataTable)
-    {
-        $yearNow = Date::now()->year;
-        $tahun_ajaran = $yearNow . "/" . $yearNow + 1;
-
-        $units = Unit::select('id', 'nama')->orderBy('nama')->get();
-
-        $data = [
-            'units' => $units,
-            'title' => 'Kelompok Halaqah',
-            'page_title' => 'Kelompok Halaqah',
-            'tahun_ajaran' => $tahun_ajaran
-        ];
-
-        return $dataTable->with('tahun_ajaran', $tahun_ajaran)->render('content.kelompok_halaqah', $data);
-    }
-
-    public function rekap_nilai()
-    {
-        $nilais = Nilai::with('siswa.guruQuran')->get();
-
-        $data = [
-            'nilais' => $nilais,
-            'title' => 'Rekap Nilai',
-            'page_title' => 'Rekap Nilai'
-        ];
-
-        return view('admin_pusat.rekap_nilai', $data);
     }
 
     public function ujian()
